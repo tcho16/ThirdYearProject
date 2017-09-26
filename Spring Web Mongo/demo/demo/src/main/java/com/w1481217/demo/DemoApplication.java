@@ -15,22 +15,5 @@ public class DemoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
 
-		try {
-			// Creates a new instance of MongoDBClient and connect to localhost
-			// port 27017
-			MongoClient mongoClient = new MongoClient("localhost", 27017);
-
-            // Creating a database called Hello and creating a collection called HelloCollectionSS
-            MongoDatabase db = mongoClient.getDatabase("Hello");
-            db.createCollection("HelloCollectionSS");
-
-            //Displaying the current databases in Mongo
-            for(String name : mongoClient.listDatabaseNames()){
-                System.out.println(name);
-            }
-            
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 }
