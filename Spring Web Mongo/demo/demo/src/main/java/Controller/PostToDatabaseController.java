@@ -1,5 +1,6 @@
 package Controller;
 
+import Constants.Constants;
 import Database.MongoBase;
 import org.codehaus.groovy.control.messages.Message;
 import org.springframework.http.HttpEntity;
@@ -23,7 +24,7 @@ public class PostToDatabaseController {
 
 
         MongoBase dbConnection = new MongoBase();
-        dbConnection.addGPSEntry(id, longitude, latitude, status, "SpringWeb", "TestingSpring");
+        dbConnection.addGPSEntry(id, longitude, latitude, status, Constants.database, Constants.collection);
 
         return "Added " + id + ". Long: " + longitude + ". Latitude: " + latitude + ". Status: " + status + " successfully!";
 
