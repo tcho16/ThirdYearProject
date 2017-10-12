@@ -8,3 +8,4 @@ Technology stack is:
  - Spring Boot + Tomcat
  - Java
  - Maven
+ - MongoDB
