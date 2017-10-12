@@ -11,12 +11,10 @@
 const char* ssid     = "SKY1DA94";
 const char* password = "TXXXYABR";
 
-const char* host = "192.168.0.11";
-const char* streamId   = "....................";
-const char* privateKey = "....................";
+const char* host = "example.com";
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   delay(10);
 
   // We start by connecting to a WiFi network
@@ -43,18 +41,16 @@ void setup() {
   Serial.println(WiFi.localIP());
 }
 
-int value = 0;
+
 
 void loop() {
   delay(5000);
-  ++value;
-
   Serial.print("connecting to ");
   Serial.println(host);
   
   // Use WiFiClient class to create TCP connections
   WiFiClient client;
-  const int httpPort = 8080;
+  const int httpPort = 80;
   if (!client.connect(host, httpPort)) {
     Serial.println("connection failed");
     return;

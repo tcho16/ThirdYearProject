@@ -1,3 +1,12 @@
+//Wifi
+#include <ESP8266WiFi.h>
+
+const char* ssid     = "SKY1DA94";
+const char* password = "TXXXYABR";
+const char* host = "example.com";
+
+//THERMISTOR BELOW
+
 // which analog pin to connect the thermistor
 #define THERMISTORPIN A0         
 // resistance at 25 degrees C
@@ -23,10 +32,25 @@ int distance;
 uint16_t samples[NUMSAMPLES];
  
 void setup(void) {
+  delay(20);
 pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output for ultrasonic
 pinMode(echoPin, INPUT); // Sets the echoPin as an Input for ultrasonic
   Serial.begin(9600);
- // analogReference(EXTERNAL);
+
+//Connecting to wifi
+Serial.print("Connecting to ");
+  Serial.println(ssid);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected");  
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
 }
  
 void loop(void) {
@@ -97,11 +121,86 @@ delay(1500);
   if(distance <10 ){
     Serial.println("sensor reading below 10");
   }
-  if(steinhart > 30 && distance <10){
-    Serial.println("Send request to server");
+  
+    Serial.println("===Sending request to server===");
+delay(2500);
+// Use WiFiClient class to create TCP connections
+  WiFiClient client;
+  const int httpPort = 80;
+  
+if(steinhart > 30 && distance <10){
+  //SEND A POST REQUEST INDICATING CAR SPOT IS OCCUPIED
+  if (!client.connect("example.com", httpPort)) {
+    Serial.println("connection failed");
+    return;
   }
+  Serial.print("connecting to ");
+  Serial.println(host);
+  
+  
+
+  // We now create a URI for the request
+  String url = "/";
+  Serial.print("Requesting URL: ");
+  Serial.println(url);
+
+  // This will send the request to the server
+  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+               "Host: " + host + "\r\n" + 
+               "Connection: close\r\n\r\n");
+  unsigned long timeout = millis();
+  while (client.available() == 0) {
+    if (millis() - timeout > 5000) {
+      Serial.println(">>> Client Timeout !");
+      client.stop();
+      return;
+    }
+  }
+  }else{
+    //CAR IS NOT OCCUPIED HENCE SEND POST INDICATING ITS FREE
+    if (!client.connect("google.com", httpPort)) {
+    Serial.println("connection failed");
+    return;
+  }
+  Serial.print("connecting to ");
+  Serial.println(host);
+  
+  
+
+  // We now create a URI for the request
+  String url = "/";
+  Serial.print("Requesting URL: ");
+  Serial.println(url);
+
+  // This will send the request to the server
+  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+               "Host: " + host + "\r\n" + 
+               "Connection: close\r\n\r\n");
+  unsigned long timeout = millis();
+  while (client.available() == 0) {
+    if (millis() - timeout > 5000) {
+      Serial.println(">>> Client Timeout !");
+      client.stop();
+      return;
+    }
+  }
+    }
+
+  // Read all the lines of the reply from server and print them to Serial
+  while(client.available()){
+    String line = client.readStringUntil('\r');
+    Serial.print(line);
+  }
+    Serial.println();
+  Serial.println("closing connection");
+  
    
-  delay(4000);
+  delay(2000);
+
+
+
+
+
 }
 
 
