@@ -36,6 +36,22 @@ public class MongoBase {
 
     }
 
+    public void addGPSEntry(String id, String longitude, String latitude, String status, String databaseName, String collectionName){
+        MongoDatabase database = mongoClient.getDatabase(databaseName);
+        MongoCollection<Document> collection = database.getCollection(collectionName);
+
+        collection.drop();
+
+        Document tableEntry = new Document();
+        tableEntry.put("_id", id);
+        tableEntry.put("longitude", longitude);
+        tableEntry.put("latitude", latitude);
+        tableEntry.put("status", status);
+
+        collection.insertOne(tableEntry);
+
+    }
+
     public void addEntry(String databaseName, String collectionName, String nameInURL) {
         MongoDatabase database = mongoClient.getDatabase(databaseName);
         MongoCollection<Document> collection = database.getCollection(collectionName);
