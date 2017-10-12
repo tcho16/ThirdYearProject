@@ -15,14 +15,7 @@ public class MongoBase {
 
     public MongoBase() {
         try {
-            // Creates a new instance of MongoDBClient and connect to localhost
-            // port 27017
             mongoClient = new MongoClient("localhost", 27017);
-
-            // Creating a database called Hello and creating a collection called HelloCollectionSS
-//            MongoDatabase db = mongoClient.getDatabase("Hello");
-//            db.createCollection("HelloCollectionSS");
-
         } catch (Exception e) {
             e.printStackTrace();
         }
