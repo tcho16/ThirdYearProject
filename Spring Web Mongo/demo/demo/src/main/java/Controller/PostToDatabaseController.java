@@ -15,18 +15,19 @@ public class PostToDatabaseController {
     @RequestMapping(value = "/posttodb", method = RequestMethod.GET)
     @ResponseBody //@ResponseBody allows you to return a string rather than a thymeleaf template
     public String posttodb(
-            @RequestParam(value="id", required = true) String id,
-                              @RequestParam(value="longitude", required = true) String longitude,
-                              @RequestParam(value="latitude", required = true) String latitude,
-                              @RequestParam(value="status", required = true) String status
+            @RequestParam(value = "id", required = true) String id,
+            @RequestParam(value = "longitude", required = true) String longitude,
+            @RequestParam(value = "latitude", required = true) String latitude,
+            @RequestParam(value = "status", required = true) String status
     ) {
 
+
         MongoBase dbConnection = new MongoBase();
-        dbConnection.addGPSEntry(id,longitude,latitude,status,"SpringWeb", "TestingSpring");
+        dbConnection.addGPSEntry(id, longitude, latitude, status, "SpringWeb", "TestingSpring");
 
-        return "Added " + id + ". Long: "+ longitude + ". Latitude: " + latitude + ". Status: " + status + " successfully!";
-
-    }
+        return "Added " + id + ". Long: " + longitude + ". Latitude: " + latitude + ". Status: " + status + " successfully!";
 
     }
+
+}
 
