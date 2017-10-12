@@ -1,13 +1,11 @@
 package Database;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
-import com.mongodb.MongoClient;
-import com.mongodb.WriteResult;
+import com.mongodb.*;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 import javax.print.Doc;
 
@@ -15,7 +13,7 @@ public class MongoBase {
 
     MongoClient mongoClient = null;
 
-    public MongoBase(){
+    public MongoBase() {
         try {
             // Creates a new instance of MongoDBClient and connect to localhost
             // port 27017
@@ -30,26 +28,41 @@ public class MongoBase {
         }
     }
 
-    public void printCollection(String databaseName, String collectionName){
+    public void printCollection(String databaseName, String collectionName) {
 
-            MongoDatabase db =   mongoClient.getDatabase("SpringWeb");
+        MongoDatabase db = mongoClient.getDatabase("SpringWeb");
 
     }
 
-    public void addGPSEntry(String id, String longitude, String latitude, String status, String databaseName, String collectionName){
+    public void addGPSEntry(String id, String longitude, String latitude, String status, String databaseName, String collectionName) {
         MongoDatabase database = mongoClient.getDatabase(databaseName);
         MongoCollection<Document> collection = database.getCollection(collectionName);
 
-        collection.drop();
+        collection.count();
+        Document checkIfRecordExists = new Document();
+        checkIfRecordExists.put("_id", id);
 
-        Document tableEntry = new Document();
-        tableEntry.put("_id", id);
-        tableEntry.put("longitude", longitude);
-        tableEntry.put("latitude", latitude);
-        tableEntry.put("status", status);
+        FindIterable<Document> documents = collection.find(checkIfRecordExists);
 
-        collection.insertOne(tableEntry);
+        if (documents.first() == null) {
+            System.out.println("In if statement");
+            Document tableEntry = new Document();
+            tableEntry.put("_id", id);
+            tableEntry.put("longitude", longitude);
+            tableEntry.put("latitude", latitude);
+            tableEntry.put("status", status);
 
+            collection.insertOne(tableEntry);
+            closeConnection();
+        } else {
+            System.out.println("In else statement");
+            Document doc = new Document();
+            doc.put("_id", id);
+            Document doc2 = new Document();
+            doc2.append("$set", new BasicDBObject().append("status", status));
+            collection.findOneAndUpdate(doc, doc2);
+            closeConnection();
+        }
     }
 
     public void addEntry(String databaseName, String collectionName, String nameInURL) {
@@ -64,6 +77,7 @@ public class MongoBase {
 
 
         collection.insertOne(obj);
+        closeConnection();
 
 
     }
