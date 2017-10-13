@@ -3,6 +3,7 @@ package Controller;
 
 import Constants.Constants;
 import DAO.DAOImplementation;
+import DAO.DAOInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 public class ResponseController {
 
     @Autowired
-    DAOImplementation dbConnection;
+    DAOInterface dbConnection;
 
     @RequestMapping(value = "/jsonresult", method = RequestMethod.GET)
     @ResponseBody

@@ -2,6 +2,7 @@ package Controller;
 
 import Constants.Constants;
 import DAO.DAOImplementation;
+import DAO.DAOInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 public class PostToDatabaseController {
 
     @Autowired
-    DAOImplementation db;
+    DAOInterface db;
 
     @RequestMapping(value = "/posttodb", method = RequestMethod.GET)
     @ResponseBody //@ResponseBody allows you to return a string rather than a thymeleaf template

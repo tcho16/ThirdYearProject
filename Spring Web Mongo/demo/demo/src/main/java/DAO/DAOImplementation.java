@@ -5,8 +5,15 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.omg.PortableServer.LIFESPAN_POLICY_ID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Component
 public class DAOImplementation implements DAOInterface {
@@ -22,7 +29,7 @@ public class DAOImplementation implements DAOInterface {
         }
     }
 
-    public String documentToJSON(String id, String databaseName, String collectionName){
+    public String documentToJSON(String id, String databaseName, String collectionName) {
         MongoDatabase database = mongoClient.getDatabase(databaseName);
         MongoCollection<Document> collection = database.getCollection(collectionName);
 
@@ -31,9 +38,9 @@ public class DAOImplementation implements DAOInterface {
         checkIfRecordExists.put("_id", id);
         FindIterable<Document> documents = collection.find(checkIfRecordExists);
 
-        if(documents.first() == null){
-            returnString = "Did not any records";
-        }else{
+        if (documents.first() == null) {
+            returnString = "{Did not find any records}";
+        } else {
             returnString = documents.first().toJson();
         }
         //closeConnection();
@@ -43,29 +50,32 @@ public class DAOImplementation implements DAOInterface {
     public void addGPSEntry(String id, String longitude, String latitude, String status, String databaseName, String collectionName) {
         MongoDatabase database = mongoClient.getDatabase(databaseName);
         MongoCollection<Document> collection = database.getCollection(collectionName);
+        DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+        Date dateobj = new Date();
 
         Document checkIfRecordExists = new Document();
         checkIfRecordExists.put("_id", id);
         FindIterable<Document> setOfDocuments = collection.find(checkIfRecordExists);
 
         if (setOfDocuments.first() == null) {
-            System.out.println("In if statement");
-            Document tableEntry = new Document();
-            tableEntry.put("_id", id);
-            tableEntry.put("longitude", longitude);
-            tableEntry.put("latitude", latitude);
-            tableEntry.put("status", status);
+            Document mainEntry = new Document();
+            mainEntry.append("_id", id);
+            mainEntry.append("longitude", longitude);
+            mainEntry.append("latitude", latitude);
 
-            collection.insertOne(tableEntry);
-        }else {
-            System.out.println("In else statement");
+            List<BasicDBObject> timeDateUsage = new ArrayList<>();
+            timeDateUsage.add(new BasicDBObject(df.format(dateobj).toString(), status));
+            mainEntry.put("timeDateOfUsage", timeDateUsage);
+            collection.insertOne(mainEntry);
+        } else {
             Document doc = new Document();
             doc.put("_id", id);
-            Document doc2 = new Document();
-            doc2.append("$set", new BasicDBObject().append("status", status));
-            collection.findOneAndUpdate(doc, doc2);
+            collection.updateOne(doc, new Document(
+                            "$push", new Document("timeDateOfUsage",
+                                new Document(df.format(dateobj).toString(), status))
+                    )
+            );
         }
-        closeConnection();
     }
 
     public void closeConnection() {
@@ -77,7 +87,7 @@ public class DAOImplementation implements DAOInterface {
         MongoDatabase database = mongoClient.getDatabase(databaseName);
         MongoCollection<Document> collection = database.getCollection(collectionName);
 
-        for(Document doc : collection.find()){
+        for (Document doc : collection.find()) {
             str.append(doc.toJson());
         }
         return str.toString();
