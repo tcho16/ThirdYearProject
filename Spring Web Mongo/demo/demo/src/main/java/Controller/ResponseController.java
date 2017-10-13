@@ -2,19 +2,20 @@ package Controller;
 
 
 import Constants.Constants;
-import Database.MongoBase;
-import org.apache.tomcat.util.bcel.Const;
+import DAO.DAOImplementation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 @RestController
 public class ResponseController {
 
+    @Autowired
+    DAOImplementation dbConnection;
+
     @RequestMapping(value = "/jsonresult", method = RequestMethod.GET)
     @ResponseBody
     public String jsonresult(@RequestParam(value = "id", required = true) String id){
-        MongoBase dbConnection = new MongoBase();
+
         return dbConnection.documentToJSON(id, Constants.database,Constants.collection);
 
     }
@@ -22,9 +23,8 @@ public class ResponseController {
     @RequestMapping(value = "/alljsonresult", method = RequestMethod.GET)
     @ResponseBody
     public String alljsonresult(){
-        MongoBase dbConnection = new MongoBase();
-        return dbConnection.allDocumentToJSON(Constants.database,Constants.collection);
 
+        return dbConnection.allDocumentToJSON(Constants.database,Constants.collection);
     }
 
 }

@@ -1,20 +1,20 @@
-package Database;
+package DAO;
 
 import com.mongodb.*;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
-import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import javax.print.Doc;
-import java.util.Iterator;
+@Component
+public class DAOImplementation implements DAOInterface {
 
-public class MongoBase {
+    @Autowired
+    MongoClient mongoClient;
 
-    MongoClient mongoClient = null;
-
-    public MongoBase() {
+    public DAOImplementation() {
         try {
             mongoClient = new MongoClient("localhost", 27017);
         } catch (Exception e) {
@@ -22,24 +22,22 @@ public class MongoBase {
         }
     }
 
-    public void printCollection(String databaseName, String collectionName) {
-
-        MongoDatabase db = mongoClient.getDatabase("SpringWeb");
-
-    }
-
     public String documentToJSON(String id, String databaseName, String collectionName){
         MongoDatabase database = mongoClient.getDatabase(databaseName);
         MongoCollection<Document> collection = database.getCollection(collectionName);
 
+        String returnString = "";
         Document checkIfRecordExists = new Document();
         checkIfRecordExists.put("_id", id);
         FindIterable<Document> documents = collection.find(checkIfRecordExists);
+
         if(documents.first() == null){
-            return "Did not any records";
+            returnString = "Did not any records";
         }else{
-            return documents.first().toJson();
+            returnString = documents.first().toJson();
         }
+        //closeConnection();
+        return returnString;
     }
 
     public void addGPSEntry(String id, String longitude, String latitude, String status, String databaseName, String collectionName) {
@@ -79,11 +77,9 @@ public class MongoBase {
         MongoDatabase database = mongoClient.getDatabase(databaseName);
         MongoCollection<Document> collection = database.getCollection(collectionName);
 
-        FindIterable<Document> documents = collection.find();
         for(Document doc : collection.find()){
             str.append(doc.toJson());
         }
         return str.toString();
-
     }
 }

@@ -1,17 +1,16 @@
 package Controller;
 
 import Constants.Constants;
-import Database.MongoBase;
-import org.codehaus.groovy.control.messages.Message;
-import org.springframework.http.HttpEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import DAO.DAOImplementation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
 public class PostToDatabaseController {
 
+    @Autowired
+    DAOImplementation db;
 
     @RequestMapping(value = "/posttodb", method = RequestMethod.GET)
     @ResponseBody //@ResponseBody allows you to return a string rather than a thymeleaf template
@@ -21,12 +20,9 @@ public class PostToDatabaseController {
             @RequestParam(value = "latitude", required = true) String latitude,
             @RequestParam(value = "status", required = true) String status
     ) {
+        db.addGPSEntry(id, longitude, latitude, status, Constants.database, Constants.collection);
 
-
-        MongoBase dbConnection = new MongoBase();
-        dbConnection.addGPSEntry(id, longitude, latitude, status, Constants.database, Constants.collection);
-
-        return "Added " + id + ". Long: " + longitude + ". Latitude: " + latitude + ". Status: " + status + " successfully!";
+        return "Received " + id + ". Long: " + longitude + ". Latitude: " + latitude + ". Status: " + status + " successfully!";
 
     }
 
