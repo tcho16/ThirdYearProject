@@ -22,11 +22,6 @@ public class DAOImplementation implements DAOInterface {
     MongoClient mongoClient;
 
     public DAOImplementation() {
-        try {
-            mongoClient = new MongoClient("localhost", 27017);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public String documentToJSON(String id, String databaseName, String collectionName) {
@@ -51,7 +46,7 @@ public class DAOImplementation implements DAOInterface {
         MongoDatabase database = mongoClient.getDatabase(databaseName);
         MongoCollection<Document> collection = database.getCollection(collectionName);
         DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-        Date dateobj = new Date();
+        Date dateObj = new Date();
 
         Document checkIfRecordExists = new Document();
         checkIfRecordExists.put("_id", id);
@@ -64,7 +59,7 @@ public class DAOImplementation implements DAOInterface {
             mainEntry.append("latitude", latitude);
 
             List<BasicDBObject> timeDateUsage = new ArrayList<>();
-            timeDateUsage.add(new BasicDBObject(df.format(dateobj).toString(), status));
+            timeDateUsage.add(new BasicDBObject(df.format(dateObj).toString(), status));
             mainEntry.put("timeDateOfUsage", timeDateUsage);
             collection.insertOne(mainEntry);
         } else {
@@ -72,7 +67,7 @@ public class DAOImplementation implements DAOInterface {
             doc.put("_id", id);
             collection.updateOne(doc, new Document(
                             "$push", new Document("timeDateOfUsage",
-                                new Document(df.format(dateobj).toString(), status))
+                                new Document(df.format(dateObj).toString(), status))
                     )
             );
         }
