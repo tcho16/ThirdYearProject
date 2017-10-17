@@ -3,7 +3,7 @@
 
 const char* ssid     = "SKY1DA94";
 const char* password = "TXXXYABR";
-const char* host = "example.com";
+const char* host = "192.168.0.11";
 
 //THERMISTOR BELOW
 // which analog pin to connect the thermistor
@@ -143,10 +143,10 @@ void loop(void) {
   delay(2500);
   // Use WiFiClient class to create TCP connections
   WiFiClient client;
-  const int httpPort = 80;
+  const int httpPort = 8080;
 
   if (steinhart > 30 && distance < 10) {
-    //SEND A POST REQUEST INDICATING CAR SPOT IS OCCUPIED
+    //SEND A REQUEST INDICATING CAR SPOT IS OCCUPIED
     if (!client.connect(host, httpPort)) {
       Serial.println("connection failed");
       return;
@@ -157,7 +157,7 @@ void loop(void) {
 
 
     // We now create a URI for the request
-    String url = "/";
+    String url = "/posttodb?id=66&longitude=3222&latitude=55&status=1";
     Serial.print("Requesting URL: ");
     Serial.println(url);
 
@@ -175,7 +175,7 @@ void loop(void) {
     }
   } else {
     //CAR IS NOT OCCUPIED HENCE SEND POST INDICATING ITS FREE
-    if (!client.connect("google.com", httpPort)) {
+    if (!client.connect(host, httpPort)) {
       Serial.println("connection failed");
       return;
     }
@@ -185,7 +185,7 @@ void loop(void) {
 
 
     // We now create a URI for the request
-    String url = "/";
+    String url = "/posttodb?id=66&longitude=3222&latitude=55&status=0";
     Serial.print("Requesting URL: ");
     Serial.println(url);
 
@@ -213,10 +213,6 @@ void loop(void) {
 
 
   delay(2000);
-
-
-
-
 
 }
 

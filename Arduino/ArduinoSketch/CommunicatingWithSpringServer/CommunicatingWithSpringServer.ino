@@ -11,7 +11,7 @@
 const char* ssid     = "SKY1DA94";
 const char* password = "TXXXYABR";
 
-const char* host = "example.com";
+const char* host = "192.168.0.11";
 
 void setup() {
   Serial.begin(9600);
@@ -50,14 +50,14 @@ void loop() {
   
   // Use WiFiClient class to create TCP connections
   WiFiClient client;
-  const int httpPort = 80;
+  const int httpPort = 8080;
   if (!client.connect(host, httpPort)) {
     Serial.println("connection failed");
     return;
   }
   
   // We now create a URI for the request
-  String url = "/";
+  String url = "/posttodb?id=70&longitude=3222&latitude=55&status=1";
   
   Serial.print("Requesting URL: ");
   Serial.println(url);
