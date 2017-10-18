@@ -24,7 +24,6 @@ public class PostToDatabaseController {
         db.addGPSEntry(id, longitude, latitude, status, Constants.database, Constants.collection);
 
         return "Received " + id + ". Long: " + longitude + ". Latitude: " + latitude + ". Status: " + status + " successfully!";
-
     }
 
 }
