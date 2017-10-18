@@ -1,11 +1,11 @@
 package DAO;
 
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
-import org.omg.PortableServer.LIFESPAN_POLICY_ID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -67,7 +67,7 @@ public class DAOImplementation implements DAOInterface {
             doc.put("_id", id);
             collection.updateOne(doc, new Document(
                             "$push", new Document("timeDateOfUsage",
-                                new Document(df.format(dateObj).toString(), status))
+                            new Document(df.format(dateObj).toString(), status))
                     )
             );
         }
