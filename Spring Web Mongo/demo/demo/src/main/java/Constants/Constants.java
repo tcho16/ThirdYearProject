@@ -2,7 +2,7 @@ package Constants;
 
 public class Constants {
 
-    public static String database = "SpringWeb";
-    public static String collection = "TestingSpring";
+    public static final String database = "SpringWeb";
+    public static final String collection = "TestingSpring";
 
 }

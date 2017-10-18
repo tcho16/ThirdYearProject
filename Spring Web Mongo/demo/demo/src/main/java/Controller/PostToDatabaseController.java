@@ -1,13 +1,17 @@
 package Controller;
 
+
 import Constants.Constants;
-import DAO.DAOImplementation;
 import DAO.DAOInterface;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 
-@RestController
+@Controller
 public class PostToDatabaseController {
 
     @Autowired
@@ -23,7 +27,7 @@ public class PostToDatabaseController {
     ) {
         db.addGPSEntry(id, longitude, latitude, status, Constants.database, Constants.collection);
 
-        return "Received " + id + ". Long: " + longitude + ". Latitude: " + latitude + ". Status: " + status + " successfully!";
+        return "Added the following: " + id + ". Long: " + longitude + ". Latitude: " + latitude + ". Status: " + status;
     }
 
 }
