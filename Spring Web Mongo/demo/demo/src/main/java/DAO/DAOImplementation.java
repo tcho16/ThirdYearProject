@@ -58,18 +58,33 @@ public class DAOImplementation implements DAOInterface {
             mainEntry.append("longitude", longitude);
             mainEntry.append("latitude", latitude);
 
-            List<BasicDBObject> timeDateUsage = new ArrayList<>();
-            timeDateUsage.add(new BasicDBObject(df.format(dateObj).toString(), status));
+            List<String> timeDateUsage = new ArrayList<>();
+            timeDateUsage.add(df.format(dateObj).toString());
+            timeDateUsage.add(status);
+//            timeDateUsage.add(new BasicDBObject(
+//                    df.format(dateObj).toString(), status
+//            )
+//            );
             mainEntry.put("timeDateOfUsage", timeDateUsage);
             collection.insertOne(mainEntry);
         } else {
             Document doc = new Document();
             doc.put("_id", id);
             collection.updateOne(doc, new Document(
-                            "$push", new Document("timeDateOfUsage",
-                            new Document(df.format(dateObj).toString(), status))
-                    )
-            );
+                    "$push", new Document("timeDateOfUsage", df.format(dateObj).toString())
+            ));
+            collection.updateOne(doc, new Document(
+                    "$push", new Document("timeDateOfUsage", status)
+            ));
+
+//            collection.updateOne(doc, new Document(
+//                            "$push", new Document("timeDateOfUsage",
+//                            new Document(
+//                                    df.format(dateObj).toString(), status
+//                            )
+//                    )
+//                    )
+//            );
         }
     }
 
