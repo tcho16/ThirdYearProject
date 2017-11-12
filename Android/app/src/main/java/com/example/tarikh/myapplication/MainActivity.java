@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void callTheService(View view) {
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://example.com",
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.0.11:8080/alljsonresult",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
