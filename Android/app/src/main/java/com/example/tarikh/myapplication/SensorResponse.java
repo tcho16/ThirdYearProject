@@ -1,36 +1,34 @@
 package com.example.tarikh.myapplication;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SensorResponse {
 
-    private final String id;
-    private final String longitude;
-    private final String latitude;
-    private final List<String> timeDateOfUsage;
+    private String id;
 
-    public SensorResponse(String id, String longitude, String latitude, List<String> timeDateOfUsage){
+    public String get_id() { return this.id; }
 
-        this.id = id;
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.timeDateOfUsage = timeDateOfUsage;
-    }
+    public void set_id(String id) { this.id = id; }
 
-    public String getId() {
-        return id;
-    }
+    private String longitude;
 
-    public String getLongitude() {
-        return longitude;
-    }
+    public String getLongitude() { return this.longitude; }
 
-    public String getLatitude() {
-        return latitude;
-    }
+    public void setLongitude(String longitude) { this.longitude = longitude; }
 
-    public List<String> getTimeDateOfUsage() {
-        return timeDateOfUsage;
-    }
+    private String latitude;
+
+    public String getLatitude() { return this.latitude; }
+
+    public void setLatitude(String latitude) { this.latitude = latitude; }
+
+    private ArrayList<String> timeDateOfUsage;
+
+    public ArrayList<String> getTimeDateOfUsage() { return this.timeDateOfUsage; }
+
+    public void setTimeDateOfUsage(ArrayList<String> timeDateOfUsage) { this.timeDateOfUsage = timeDateOfUsage; }
 
 }
+
+
