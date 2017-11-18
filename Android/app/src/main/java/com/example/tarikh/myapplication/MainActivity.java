@@ -15,12 +15,10 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.w3c.dom.Text;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -39,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        textViewService = findViewById(R.id.textViewServiceOutput) ;
+        textViewService = findViewById(R.id.textViewServiceOutput);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -51,28 +49,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void callTheService(View view) {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.0.11:8080/alljsonresult",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-
-                        textViewService.setText(response.substring(0,133));
-                    }
+                (String response) -> {
+                    textViewService.setText(response.substring(0, 133));
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-        Context context = getApplicationContext();
-        CharSequence text = "Failed to connect to the service!";
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
-                    }
+                (VolleyError error) -> {
+                    Context context = getApplicationContext();
+                    CharSequence text = "Failed to connect to the service!";
+                    int duration = Toast.LENGTH_SHORT;
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
                 }
         );
 
         requestQueue.add(stringRequest);
-
     }
-
 }
