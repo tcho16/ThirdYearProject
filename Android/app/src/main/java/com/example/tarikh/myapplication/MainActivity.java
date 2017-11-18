@@ -18,7 +18,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -26,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     RequestQueue requestQueue;
     Button serviceButton;
     TextView textViewService;
+    SensorResponse responseJson;
 
 
     @Override
@@ -50,17 +55,35 @@ public class MainActivity extends AppCompatActivity {
     public void callTheService(View view) {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.0.11:8080/alljsonresult",
                 (String response) -> {
-                    textViewService.setText(response.substring(0, 133));
+                    try{
+                        ObjectMapper mapper = new ObjectMapper();
+                        responseJson = mapper.readValue(response,SensorResponse.class);
+                    } catch (JsonParseException e) {
+                        e.printStackTrace();
+                        CharSequence text = "Error parsing JSON";
+                        printToast(getApplicationContext(),text,Toast.LENGTH_SHORT);
+                    } catch (JsonMappingException e) {
+                        CharSequence text = "Error mapping to JSON";
+                        printToast(getApplicationContext(),text,Toast.LENGTH_SHORT);
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        CharSequence text = "Error.";
+                        printToast(getApplicationContext(),text,Toast.LENGTH_SHORT);
+                        e.printStackTrace();
+                    }
+                    textViewService.setText(responseJson.toString());
                 },
                 (VolleyError error) -> {
-                    Context context = getApplicationContext();
                     CharSequence text = "Failed to connect to the service!";
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
+                    printToast(getApplicationContext(),text,Toast.LENGTH_SHORT);
+
                 }
         );
-
         requestQueue.add(stringRequest);
+    }
+
+    public void printToast(Context context, CharSequence text, int duration){
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
     }
 }
