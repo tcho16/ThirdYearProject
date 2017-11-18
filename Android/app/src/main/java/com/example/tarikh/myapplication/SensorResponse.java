@@ -29,6 +29,11 @@ public class SensorResponse {
 
     public void setTimeDateOfUsage(ArrayList<String> timeDateOfUsage) { this.timeDateOfUsage = timeDateOfUsage; }
 
+    @Override
+    public String toString(){
+        return "ID: " + get_id() + ". Longtitude: " + getLongitude() + ". Latitude: " + getLatitude() + ". time: " + getTimeDateOfUsage().toString();
+    }
+
 }
 
 
