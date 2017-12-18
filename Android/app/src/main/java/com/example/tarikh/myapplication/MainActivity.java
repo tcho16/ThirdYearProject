@@ -2,6 +2,7 @@ package com.example.tarikh.myapplication;
 
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -50,6 +51,11 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+    }
+
+    public void callTheMap(View view){
+        Intent mapActivity = new Intent(MainActivity.this, MapsActivity.class);
+        startActivity(mapActivity);
     }
 
     public void callTheService(View view) {
