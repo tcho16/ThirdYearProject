@@ -54,7 +54,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void callTheMap(View view){
+
         Intent mapActivity = new Intent(MainActivity.this, MapsActivity.class);
+
+            mapActivity.putExtra("status",1);
+//        if(view.getId() == R.id.mapButton){
+//
+//            mapActivity.putExtra("status",1);
+//        }else{
+//            mapActivity.putExtra("status", 0);
+//        }
         startActivity(mapActivity);
     }
 
