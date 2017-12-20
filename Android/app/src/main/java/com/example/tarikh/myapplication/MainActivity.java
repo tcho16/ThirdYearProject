@@ -7,9 +7,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewParent;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,17 +24,25 @@ import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback{
 
     RequestQueue requestQueue;
     Button serviceButton;
     TextView textViewService;
     SensorResponse responseJson;
-
+    private GoogleMap googleMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+        mapFragment.getMapAsync(this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         textViewService = findViewById(R.id.textViewServiceOutput);
@@ -53,18 +66,54 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onMapReady(GoogleMap map) {
+
+        googleMap = map;
+
+        setUpMap();
+
+    }
+    public void setUpMap(){
+
+        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        //googleMap.setMyLocationEnabled(true);
+        googleMap.setTrafficEnabled(true);
+        googleMap.setIndoorEnabled(true);
+        googleMap.setBuildingsEnabled(true);
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
+    }
+
     public void callTheMap(View view){
 
-        Intent mapActivity = new Intent(MainActivity.this, MapsActivity.class);
+        double latitude = 51.501570;
+        double longitude = -0.271674;
 
-            mapActivity.putExtra("status",1);
+        // create marker
+        MarkerOptions marker = new MarkerOptions().position(
+                new LatLng(latitude, longitude)).title("Hello Maps");
+
+        // Changing marker icon
+        marker.icon(BitmapDescriptorFactory
+                .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+
+        // adding marker
+        googleMap.addMarker(marker);
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(latitude, longitude)).zoom(12).build();
+        googleMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(cameraPosition));
+
+        //Intent mapActivity = new Intent(MainActivity.this, MapsActivity.class);
+//
+//            mapActivity.putExtra("status",1);
 //        if(view.getId() == R.id.mapButton){
 //
 //            mapActivity.putExtra("status",1);
 //        }else{
 //            mapActivity.putExtra("status", 0);
 //        }
-        startActivity(mapActivity);
+//        startActivity(mapActivity);
     }
 
     public void callTheService(View view) {
