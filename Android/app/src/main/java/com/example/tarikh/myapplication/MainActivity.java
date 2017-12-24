@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     RequestQueue requestQueue;
     Button serviceButton;
     TextView textViewService;
-    SensorResponse responseJson;
+    SensorResponse parkingBaySensor;
     private GoogleMap googleMap;
 
     @Override
@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.hdcircle);
         textViewService = findViewById(R.id.textViewServiceOutput);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,17 +104,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .target(new LatLng(latitude, longitude)).zoom(12).build();
         googleMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
-
-        //Intent mapActivity = new Intent(MainActivity.this, MapsActivity.class);
-//
-//            mapActivity.putExtra("status",1);
-//        if(view.getId() == R.id.mapButton){
-//
-//            mapActivity.putExtra("status",1);
-//        }else{
-//            mapActivity.putExtra("status", 0);
-//        }
-//        startActivity(mapActivity);
     }
 
     public void callTheService(View view) {
@@ -121,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 (String response) -> {
                     try{
                         ObjectMapper mapper = new ObjectMapper();
-                        responseJson = mapper.readValue(response,SensorResponse.class);
+                        parkingBaySensor = mapper.readValue(response,SensorResponse.class);
                     } catch (JsonParseException e) {
                         e.printStackTrace();
                         CharSequence text = "Error parsing JSON";
@@ -135,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         printToast(getApplicationContext(),text,Toast.LENGTH_SHORT);
                         e.printStackTrace();
                     }
-                    textViewService.setText(responseJson.toString());
+                    textViewService.setText(parkingBaySensor.toString());
                 },
                 (VolleyError error) -> {
                     CharSequence text = "Failed to connect to the service!";
