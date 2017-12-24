@@ -31,18 +31,20 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback{
 
-    RequestQueue requestQueue;
-    Button serviceButton;
-    TextView textViewService;
-    SensorResponse parkingBaySensor;
+    private RequestQueue requestQueue;
+    private TextView textViewService;
+    private SensorResponse parkingBaySensor;
     private GoogleMap googleMap;
+    private ArrayList<MarkerOptions> markers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        markers = new ArrayList<>();
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
         mapFragment.getMapAsync(this);
@@ -77,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
     public void setUpMap(){
 
-        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        //googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         //googleMap.setMyLocationEnabled(true);
         googleMap.setTrafficEnabled(true);
         googleMap.setIndoorEnabled(true);
@@ -85,33 +89,53 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         googleMap.getUiSettings().setZoomControlsEnabled(true);
     }
 
-    public void callTheMap(View view){
+    private void updateMap(double x, double y, int status, String id){
 
-        double latitude = 51.501570;
-        double longitude = -0.271674;
+        googleMap.clear();
 
-        // create marker
         MarkerOptions marker = new MarkerOptions().position(
-                new LatLng(latitude, longitude)).title("Hello Maps");
+                new LatLng(x, y)).title("Parking Bay for ID: "+ id);
 
         // Changing marker icon
-        marker.icon(BitmapDescriptorFactory
-                .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+        if(status == 0){
+            marker.icon(BitmapDescriptorFactory
+                    .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+
+        }else{
+            marker.icon(BitmapDescriptorFactory
+                    .defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+        }
 
         // adding marker
         googleMap.addMarker(marker);
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(latitude, longitude)).zoom(12).build();
+
+        //TODO: GET CURRENT LOCATION OF USER AND PAN THE CAMERA ON THEM. IF NOT AVAIL THEN PAN
+        //OVER LONDON ON THE WHOLE
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(x, y)).zoom(12).build();
         googleMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
-    }
 
+    };
+
+    //Method gets called when button is pushed.
     public void callTheService(View view) {
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.0.11:8080/alljsonresult",
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.0.11:8080/jsonresult?id=45",
                 (String response) -> {
+            //TODO: KEEP A SET OF BAY OBJECTS AND KEEP THE NEWER ONE IN TERMS OF LONGER TIMEDAY USAGE FOR MACHINE LEARNING
+            //TODO: FROM THE SET, ITERATE AND DISPLAY EACH STATUS ON THE MAP TOO
                     try{
                         ObjectMapper mapper = new ObjectMapper();
                         parkingBaySensor = mapper.readValue(response,SensorResponse.class);
+
+                        double lat = Double.parseDouble(parkingBaySensor.getLatitude());
+                        double lon = Double.parseDouble(parkingBaySensor.getLongitude());
+                        ArrayList<String> timeAndDate = parkingBaySensor.getTimeDateOfUsage();
+                        String id = parkingBaySensor.get_id();
+                        int status = Integer.parseInt( timeAndDate.get(timeAndDate.size()-1));
+
+                        updateMap(lat,lon, status , id);
+
                     } catch (JsonParseException e) {
                         e.printStackTrace();
                         CharSequence text = "Error parsing JSON";
@@ -125,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         printToast(getApplicationContext(),text,Toast.LENGTH_SHORT);
                         e.printStackTrace();
                     }
-                    textViewService.setText(parkingBaySensor.toString());
+
                 },
                 (VolleyError error) -> {
                     CharSequence text = "Failed to connect to the service!";
