@@ -94,12 +94,17 @@ public class DAOImplementation implements DAOInterface {
 
     public String allDocumentToJSON(String databaseName, String collectionName) {
         StringBuilder str = new StringBuilder();
+        str.append("[");
         MongoDatabase database = mongoClient.getDatabase(databaseName);
         MongoCollection<Document> collection = database.getCollection(collectionName);
 
         for (Document doc : collection.find()) {
             str.append(doc.toJson());
+            str.append(",");
         }
+        //Used to delete the last comma on the last list of objects
+        str.deleteCharAt(str.length()-1);
+        str.append("]");
         return str.toString();
     }
 }
