@@ -1,18 +1,13 @@
 package com.example.tarikh.myapplication;
 
-import android.app.DownloadManager;
+
 import android.content.Context;
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.ViewParent;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,20 +26,21 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback{
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private RequestQueue requestQueue;
     private TextView textViewService;
-    private SensorResponse parkingBaySensor;
     private GoogleMap googleMap;
     private ArrayList<MarkerOptions> markers;
+    private List<SensorResponse> listOfResponses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setSupportActionBar(toolbar);
 
         markers = new ArrayList<>();
-
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
         mapFragment.getMapAsync(this);
 
@@ -79,7 +74,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setUpMap();
 
     }
-    public void setUpMap(){
+
+    public void setUpMap() {
 
         //googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         //googleMap.setMyLocationEnabled(true);
@@ -89,24 +85,53 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         googleMap.getUiSettings().setZoomControlsEnabled(true);
     }
 
-    private void updateMap(double x, double y, int status, String id){
+    private void updateMap(List<SensorResponse> res) {
+        markers.clear();
 
-        googleMap.clear();
+        for (int i = 0; i < res.size(); i++) {
+            markers.add(new MarkerOptions()
+                    .position(new LatLng(
+                            Double.parseDouble(res.get(i).getLatitude()), Double.parseDouble(res.get(i).getLongitude())
+                    ))
+                    .title("Parking Bay for ID: " + res.get(i).get_id())
+            );
+
+            int status = res.get(i).getTimeDateOfUsage().size() - 1;
+            if (Integer.parseInt(res.get(i).getTimeDateOfUsage().get(status)) == 0) {
+                markers.get(i).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+            } else {
+                markers.get(i).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+            }
+        }
+
+        for (MarkerOptions m : markers) {
+            googleMap.addMarker(m);
+        }
+
+        //TODO: GET CURRENT LOCATION OF USER AND PAN THE CAMERA ON THEM. IF NOT AVAIL THEN PAN
+        //OVER LONDON ON THE WHOLE
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(51.514471, -0.110893)).zoom(9).build();
+        googleMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(cameraPosition));
+
+    }
+
+    private void updateMapOne(double x, double y, int status, String id) {
 
         MarkerOptions marker = new MarkerOptions().position(
-                new LatLng(x, y)).title("Parking Bay for ID: "+ id);
+                new LatLng(x, y)).title("Parking Bay for ID: " + id);
 
         // Changing marker icon
-        if(status == 0){
+        if (status == 0) {
             marker.icon(BitmapDescriptorFactory
                     .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
 
-        }else{
+        } else {
             marker.icon(BitmapDescriptorFactory
                     .defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
         }
 
-        // adding marker
         googleMap.addMarker(marker);
 
         //TODO: GET CURRENT LOCATION OF USER AND PAN THE CAMERA ON THEM. IF NOT AVAIL THEN PAN
@@ -116,51 +141,49 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         googleMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
 
-    };
+    }
 
     //Method gets called when button is pushed.
     public void callTheService(View view) {
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.0.11:8080/jsonresult?id=45",
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.0.11:8080/alljsonresult",
                 (String response) -> {
-            //TODO: KEEP A SET OF BAY OBJECTS AND KEEP THE NEWER ONE IN TERMS OF LONGER TIMEDAY USAGE FOR MACHINE LEARNING
-            //TODO: FROM THE SET, ITERATE AND DISPLAY EACH STATUS ON THE MAP TOO
-                    try{
+                    //TODO: IF INTERNET NOT AVAIL, KEEP A SET OF BAY OBJECTS AND KEEP THE NEWER ONE IN TERMS OF LONGER TIMEDAY USAGE FOR MACHINE LEARNING
+                    //TODO: FROM THE SET, ITERATE AND DISPLAY EACH STATUS ON THE MAP TOO
+                    try {
                         ObjectMapper mapper = new ObjectMapper();
-                        parkingBaySensor = mapper.readValue(response,SensorResponse.class);
+                        if (listOfResponses != null) {
+                            listOfResponses.clear();
+                        }
+                        listOfResponses = new ArrayList<>(Arrays.asList(mapper.readValue(response, SensorResponse[].class)));
 
-                        double lat = Double.parseDouble(parkingBaySensor.getLatitude());
-                        double lon = Double.parseDouble(parkingBaySensor.getLongitude());
-                        ArrayList<String> timeAndDate = parkingBaySensor.getTimeDateOfUsage();
-                        String id = parkingBaySensor.get_id();
-                        int status = Integer.parseInt( timeAndDate.get(timeAndDate.size()-1));
-
-                        updateMap(lat,lon, status , id);
+                        googleMap.clear();
+                        updateMap(listOfResponses);
 
                     } catch (JsonParseException e) {
                         e.printStackTrace();
                         CharSequence text = "Error parsing JSON";
-                        printToast(getApplicationContext(),text,Toast.LENGTH_SHORT);
+                        printToast(getApplicationContext(), text, Toast.LENGTH_SHORT);
                     } catch (JsonMappingException e) {
                         CharSequence text = "Error mapping to JSON";
-                        printToast(getApplicationContext(),text,Toast.LENGTH_SHORT);
+                        printToast(getApplicationContext(), text, Toast.LENGTH_SHORT);
                         e.printStackTrace();
                     } catch (IOException e) {
                         CharSequence text = "Error.";
-                        printToast(getApplicationContext(),text,Toast.LENGTH_SHORT);
+                        printToast(getApplicationContext(), text, Toast.LENGTH_SHORT);
                         e.printStackTrace();
                     }
 
                 },
                 (VolleyError error) -> {
                     CharSequence text = "Failed to connect to the service!";
-                    printToast(getApplicationContext(),text,Toast.LENGTH_SHORT);
+                    printToast(getApplicationContext(), text, Toast.LENGTH_SHORT);
 
                 }
         );
         requestQueue.add(stringRequest);
     }
 
-    public void printToast(Context context, CharSequence text, int duration){
+    public void printToast(Context context, CharSequence text, int duration) {
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
     }
