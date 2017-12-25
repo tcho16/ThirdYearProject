@@ -2,11 +2,14 @@ package com.example.tarikh.myapplication;
 
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,8 +32,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
@@ -143,8 +150,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-    //Method gets called when button is pushed.
-    public void callTheService(View view) {
+    private void sendRequestToServer(){
         StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.0.11:8080/alljsonresult",
                 (String response) -> {
                     //TODO: IF INTERNET NOT AVAIL, KEEP A SET OF BAY OBJECTS AND KEEP THE NEWER ONE IN TERMS OF LONGER TIMEDAY USAGE FOR MACHINE LEARNING
@@ -183,8 +189,66 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         requestQueue.add(stringRequest);
     }
 
+    //Method gets called when button is pushed.
+    public void callTheService(View view) {
+        ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        if (null != activeNetwork) {
+            sendRequestToServer();
+        }
+        else {
+            googleMap.clear();
+           printToast(getApplicationContext(), "Turn on the internet. Using machine learning on the bays.", Toast.LENGTH_SHORT);
+           predictBaysUsingML();
+        }
+
+
+    }
+
+    private void predictBaysUsingML() {
+        double betaZero = 0.7287119626;
+        double betaOne = -0.000380228529892768;
+        float currentTime = getCurrentTime();
+        Log.d("time", currentTime + " CURRENTT");
+
+        double prediction = (Math.exp(betaZero + betaOne * currentTime)) / ( 1 + Math.exp(betaZero + betaOne * currentTime));
+        Log.d("time", prediction + "This is the predrection");
+        DecimalFormat df = new DecimalFormat("#.###");
+        Log.d("time",df.format(prediction) + " decimal Format");
+
+
+        MarkerOptions marker = new MarkerOptions()
+                .position(new LatLng(
+                        51.514471, -0.110893
+                ))
+                .title("Parking Bay for ID: 4 ML" + df.format(prediction) + " chance of being occupied" );
+        if(prediction > 0.5){
+            //occupied
+            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        }else{
+            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+        }
+
+        googleMap.addMarker(marker);
+    }
+
     public void printToast(Context context, CharSequence text, int duration) {
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
+    }
+
+    public float getCurrentTime() {
+        Calendar calandar = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+        Log.d("time", simpleDateFormat.format(calandar.getTime()) + "Time is <-");
+
+        String[] time = simpleDateFormat.format(calandar.getTime()).split(":");
+        int hour = Integer.parseInt(time[0]) * 60;
+        float currentTime = hour + Integer.parseInt(time[1]);
+
+        return currentTime;
     }
 }
