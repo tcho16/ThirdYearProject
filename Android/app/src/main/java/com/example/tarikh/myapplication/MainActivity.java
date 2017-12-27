@@ -2,9 +2,11 @@ package com.example.tarikh.myapplication;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +22,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -37,7 +40,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap googleMap;
     private ArrayList<MarkerOptions> markers;
     private List<SensorResponse> listOfResponses;
+    // private ArrayList<SensorResponse> listOfSavedResponses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setSupportActionBar(toolbar);
 
         markers = new ArrayList<>();
+        listOfResponses = new ArrayList<>();
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
         mapFragment.getMapAsync(this);
 
@@ -73,6 +77,43 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    private void loadPref() {
+        Log.d("bundle", "Inside the restoring");
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String listOfBays = preferences.getString("listOfSavedBays", "");
+        ObjectMapper mapper = new ObjectMapper();
+        if (!listOfBays.equals("")) {
+            try {
+                listOfResponses = new ArrayList<>(Arrays.asList(mapper.readValue(listOfBays, SensorResponse[].class)));
+                printToast(getApplicationContext(), "Successfully loaded data", Toast.LENGTH_SHORT);
+            } catch (IOException e) {
+
+                printToast(getApplicationContext(), "Did not load data successfully", Toast.LENGTH_SHORT);
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor edit = pref.edit();
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonList = "";
+        Log.d("bundle", "insdie saving");
+
+        try {
+            jsonList = mapper.writeValueAsString(listOfResponses).toString();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        Log.d("bundle", jsonList);
+        edit.putString("listOfSavedBays", jsonList);
+        edit.apply();
+    }
+
     @Override
     public void onMapReady(GoogleMap map) {
 
@@ -83,7 +124,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     public void setUpMap() {
-
         //googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         //googleMap.setMyLocationEnabled(true);
         googleMap.setTrafficEnabled(true);
@@ -114,9 +154,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         for (MarkerOptions m : markers) {
             googleMap.addMarker(m);
         }
-
-        //TODO: GET CURRENT LOCATION OF USER AND PAN THE CAMERA ON THEM. IF NOT AVAIL THEN PAN
-        //OVER LONDON ON THE WHOLE
+        
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(51.514471, -0.110893)).zoom(9).build();
         googleMap.animateCamera(CameraUpdateFactory
@@ -124,44 +162,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-    private void updateMapOne(double x, double y, int status, String id) {
-
-        MarkerOptions marker = new MarkerOptions().position(
-                new LatLng(x, y)).title("Parking Bay for ID: " + id);
-
-        // Changing marker icon
-        if (status == 0) {
-            marker.icon(BitmapDescriptorFactory
-                    .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-
-        } else {
-            marker.icon(BitmapDescriptorFactory
-                    .defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-        }
-
-        googleMap.addMarker(marker);
-
-        //TODO: GET CURRENT LOCATION OF USER AND PAN THE CAMERA ON THEM. IF NOT AVAIL THEN PAN
-        //OVER LONDON ON THE WHOLE
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(x, y)).zoom(12).build();
-        googleMap.animateCamera(CameraUpdateFactory
-                .newCameraPosition(cameraPosition));
-
-    }
-
-    private void sendRequestToServer(){
+    private void sendRequestToServer() {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.0.11:8080/alljsonresult",
                 (String response) -> {
-                    //TODO: IF INTERNET NOT AVAIL, KEEP A SET OF BAY OBJECTS AND KEEP THE NEWER ONE IN TERMS OF LONGER TIMEDAY USAGE FOR MACHINE LEARNING
-                    //TODO: FROM THE SET, ITERATE AND DISPLAY EACH STATUS ON THE MAP TOO
                     try {
                         ObjectMapper mapper = new ObjectMapper();
                         if (listOfResponses != null) {
                             listOfResponses.clear();
                         }
                         listOfResponses = new ArrayList<>(Arrays.asList(mapper.readValue(response, SensorResponse[].class)));
-
                         googleMap.clear();
                         updateMap(listOfResponses);
 
@@ -198,11 +207,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (null != activeNetwork) {
             sendRequestToServer();
-        }
-        else {
+        } else {
+            //USE ML ON SAVED PARKING BAYS
             googleMap.clear();
-           printToast(getApplicationContext(), "Turn on the internet. Using machine learning on the bays.", Toast.LENGTH_SHORT);
-           predictBaysUsingML();
+            loadPref();
+            updateMap(listOfResponses);
+            printToast(getApplicationContext(), "Turn on the internet. Using machine learning on the bays.", Toast.LENGTH_SHORT);
+            //predictBaysUsingML();
         }
 
 
@@ -214,21 +225,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         float currentTime = getCurrentTime();
         Log.d("time", currentTime + " CURRENTT");
 
-        double prediction = (Math.exp(betaZero + betaOne * currentTime)) / ( 1 + Math.exp(betaZero + betaOne * currentTime));
+        double prediction = (Math.exp(betaZero + betaOne * currentTime)) / (1 + Math.exp(betaZero + betaOne * currentTime));
         Log.d("time", prediction + "This is the predrection");
         DecimalFormat df = new DecimalFormat("#.###");
-        Log.d("time",df.format(prediction) + " decimal Format");
+        Log.d("time", df.format(prediction) + " decimal Format");
 
 
         MarkerOptions marker = new MarkerOptions()
                 .position(new LatLng(
                         51.514471, -0.110893
                 ))
-                .title("Parking Bay for ID: 4 ML" + df.format(prediction) + " chance of being occupied" );
-        if(prediction > 0.5){
+                .title("Parking Bay for ID: 4 ML" + df.format(prediction) + " chance of being occupied");
+        if (prediction > 0.5) {
             //occupied
             marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        }else{
+        } else {
             marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
         }
 
