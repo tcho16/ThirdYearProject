@@ -3,6 +3,8 @@ package com.example.tarikh.myapplication;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap googleMap;
     private ArrayList<MarkerOptions> markers;
     private List<SensorResponse> listOfResponses;
+    private EditText location;
     // private ArrayList<SensorResponse> listOfSavedResponses;
 
     @Override
@@ -68,12 +72,31 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setImageResource(R.drawable.hdcircle);
         textViewService = findViewById(R.id.textViewServiceOutput);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+        location = findViewById(R.id.addressLookUp);
+        fab.setOnClickListener(view -> {
+            String textLocation = String.valueOf(location.getText());
+            Geocoder gc = new Geocoder(getApplicationContext());
+            List<Address> list = new ArrayList<>();
+            try {
+                list = gc.getFromLocationName(textLocation,1);
+            } catch (IOException e) {
+                Log.d("location","Failed");
+                e.printStackTrace();
             }
+            if(!list.isEmpty()){
+                Address address = list.get(0);
+                double lat = address.getLatitude();
+                double lon = address.getLongitude();
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(lat, lon)).zoom(16).build();
+                googleMap.animateCamera(CameraUpdateFactory
+                        .newCameraPosition(cameraPosition));
+            }else{
+                printToast(getApplicationContext(),"Error parsing address. Make sure internet is turned on.", Toast.LENGTH_SHORT);
+            }
+//
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
         });
     }
 
@@ -154,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         for (MarkerOptions m : markers) {
             googleMap.addMarker(m);
         }
-        
+
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(51.514471, -0.110893)).zoom(9).build();
         googleMap.animateCamera(CameraUpdateFactory
@@ -190,9 +213,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 },
                 (VolleyError error) -> {
-                    CharSequence text = "Failed to connect to the service!";
+                    CharSequence text = "Failed to connect to the service! Using ML";
+                    googleMap.clear();
+                    updateMap(listOfResponses);
                     printToast(getApplicationContext(), text, Toast.LENGTH_SHORT);
-
                 }
         );
         requestQueue.add(stringRequest);

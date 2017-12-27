@@ -41,4 +41,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <EditText
+        android:id="@+id/addressLookUp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="356dp"
+        android:ems="10"
+        android:hint="Enter Location"
+        android:inputType="textPersonName"
+        app:layout_constraintStart_toStartOf="@+id/mapFrag"
+        app:layout_constraintTop_toTopOf="@+id/mapFrag" />
+
 </android.support.constraint.ConstraintLayout>

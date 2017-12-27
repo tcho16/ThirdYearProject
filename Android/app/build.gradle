@@ -31,6 +31,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    compile 'org.slf4j:slf4j-nop:1.7.25'
     implementation 'com.google.android.gms:play-services-maps:11.4.2'
     compile(
             [group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.4.1'],
