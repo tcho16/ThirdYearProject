@@ -1,16 +1,24 @@
 package com.example.tarikh.myapplication;
 
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -28,6 +36,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -36,6 +46,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.location.*;
+
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -54,7 +66,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<MarkerOptions> markers;
     private List<SensorResponse> listOfResponses;
     private EditText location;
-    // private ArrayList<SensorResponse> listOfSavedResponses;
+    private FusedLocationProviderClient mFusedLocationClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,40 +81,40 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         listOfResponses = new ArrayList<>();
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
         mapFragment.getMapAsync(this);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setImageResource(R.drawable.hdcircle);
         textViewService = findViewById(R.id.textViewServiceOutput);
         location = findViewById(R.id.addressLookUp);
+
+
         fab.setOnClickListener(view -> {
-            String textLocation = String.valueOf(location.getText());
-            Geocoder gc = new Geocoder(getApplicationContext());
-            List<Address> list = new ArrayList<>();
-            try {
-                list = gc.getFromLocationName(textLocation,1);
-            } catch (IOException e) {
-                Log.d("location","Failed");
-                e.printStackTrace();
+            ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+            if (null != activeNetwork) {
+                LocationLatLong loc = new LocationLatLong(String.valueOf(location.getText()), getApplicationContext());
+                Address address = loc.getAddress();
+                updateCameraPosition(address.getLatitude(), address.getLongitude());
+            } else {
+                printToast(getApplicationContext(), "Turn on internet to use this feature", Toast.LENGTH_SHORT);
             }
-            if(!list.isEmpty()){
-                Address address = list.get(0);
-                double lat = address.getLatitude();
-                double lon = address.getLongitude();
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(lat, lon)).zoom(16).build();
-                googleMap.animateCamera(CameraUpdateFactory
-                        .newCameraPosition(cameraPosition));
-            }else{
-                printToast(getApplicationContext(),"Error parsing address. Make sure internet is turned on.", Toast.LENGTH_SHORT);
-            }
-//
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
         });
     }
 
+
+    private void updateCameraPosition(double latitude, double longitude) {
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(latitude, longitude)).zoom(16).build();
+        googleMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(cameraPosition));
+    }
+
     private void loadPref() {
-        Log.d("bundle", "Inside the restoring");
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String listOfBays = preferences.getString("listOfSavedBays", "");
         ObjectMapper mapper = new ObjectMapper();
@@ -110,7 +123,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 listOfResponses = new ArrayList<>(Arrays.asList(mapper.readValue(listOfBays, SensorResponse[].class)));
                 printToast(getApplicationContext(), "Successfully loaded data", Toast.LENGTH_SHORT);
             } catch (IOException e) {
-
                 printToast(getApplicationContext(), "Did not load data successfully", Toast.LENGTH_SHORT);
                 e.printStackTrace();
             }
@@ -125,35 +137,31 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SharedPreferences.Editor edit = pref.edit();
         ObjectMapper mapper = new ObjectMapper();
         String jsonList = "";
-        Log.d("bundle", "insdie saving");
-
         try {
             jsonList = mapper.writeValueAsString(listOfResponses).toString();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        Log.d("bundle", jsonList);
         edit.putString("listOfSavedBays", jsonList);
         edit.apply();
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
-
         googleMap = map;
-
         setUpMap();
-
     }
 
     public void setUpMap() {
         //googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        //googleMap.setMyLocationEnabled(true);
         googleMap.setTrafficEnabled(true);
         googleMap.setIndoorEnabled(true);
         googleMap.setBuildingsEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
+        //googleMap.setMyLocationEnabled(true);
+
     }
+
 
     private void updateMap(List<SensorResponse> res) {
         markers.clear();
@@ -210,7 +218,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         printToast(getApplicationContext(), text, Toast.LENGTH_SHORT);
                         e.printStackTrace();
                     }
-
                 },
                 (VolleyError error) -> {
                     CharSequence text = "Failed to connect to the service! Using ML";
@@ -226,7 +233,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void callTheService(View view) {
         ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
-
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
         if (null != activeNetwork) {
@@ -270,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         googleMap.addMarker(marker);
     }
 
-    public void printToast(Context context, CharSequence text, int duration) {
+    public static void printToast(Context context, CharSequence text, int duration) {
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
     }
@@ -286,4 +292,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         return currentTime;
     }
+
 }
