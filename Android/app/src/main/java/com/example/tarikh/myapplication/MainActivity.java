@@ -6,19 +6,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
-import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -36,8 +30,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -46,8 +38,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.location.*;
-
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -66,8 +56,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<MarkerOptions> markers;
     private List<SensorResponse> listOfResponses;
     private EditText location;
-    private FusedLocationProviderClient mFusedLocationClient;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,31 +69,33 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         listOfResponses = new ArrayList<>();
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
         mapFragment.getMapAsync(this);
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.hdcircle);
+        fab.setImageResource(R.drawable.go);
         textViewService = findViewById(R.id.textViewServiceOutput);
         location = findViewById(R.id.addressLookUp);
 
 
-        fab.setOnClickListener(view -> {
-            ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+        fab.setOnClickListener(view -> setUpListener());
 
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-            if (null != activeNetwork) {
-                LocationLatLong loc = new LocationLatLong(String.valueOf(location.getText()), getApplicationContext());
-                Address address = loc.getAddress();
-                updateCameraPosition(address.getLatitude(), address.getLongitude());
-            } else {
-                printToast(getApplicationContext(), "Turn on internet to use this feature", Toast.LENGTH_SHORT);
-            }
-        });
     }
 
+
+    private void setUpListener() {
+        ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        if (null != activeNetwork) {
+            LocationLatLong loc = new LocationLatLong(String.valueOf(location.getText()), getApplicationContext());
+            Address address = loc.getAddress();
+            updateCameraPosition(address.getLatitude(), address.getLongitude());
+        } else {
+            printToast(getApplicationContext(), "Turn on internet to use this feature", Toast.LENGTH_SHORT);
+        }
+    }
 
     private void updateCameraPosition(double latitude, double longitude) {
         CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -158,7 +148,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         googleMap.setIndoorEnabled(true);
         googleMap.setBuildingsEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
-        //googleMap.setMyLocationEnabled(true);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{
+                        Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION
+                }, 5);
+            }
+            return;
+        }
+        googleMap.setMyLocationEnabled(true);
 
     }
 
@@ -191,6 +189,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         googleMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
 
+    }
+
+    //Method gets called when button is pushed.
+    public void callTheService(View view) {
+        ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        if (null != activeNetwork) {
+            sendRequestToServer();
+        } else {
+            //USE ML ON SAVED PARKING BAYS
+            googleMap.clear();
+            loadPref();
+            //predictBaysUsingML();
+            updateMap(listOfResponses);
+            printToast(getApplicationContext(), "Turn on the internet. Using machine learning on the bays.", Toast.LENGTH_SHORT);
+        }
     }
 
     private void sendRequestToServer() {
@@ -227,26 +243,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
         );
         requestQueue.add(stringRequest);
-    }
-
-    //Method gets called when button is pushed.
-    public void callTheService(View view) {
-        ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-        if (null != activeNetwork) {
-            sendRequestToServer();
-        } else {
-            //USE ML ON SAVED PARKING BAYS
-            googleMap.clear();
-            loadPref();
-            updateMap(listOfResponses);
-            printToast(getApplicationContext(), "Turn on the internet. Using machine learning on the bays.", Toast.LENGTH_SHORT);
-            //predictBaysUsingML();
-        }
-
-
     }
 
     private void predictBaysUsingML() {
