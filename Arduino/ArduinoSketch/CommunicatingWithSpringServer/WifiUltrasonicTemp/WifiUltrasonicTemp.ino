@@ -145,7 +145,7 @@ void loop(void) {
   WiFiClient client;
   const int httpPort = 8080;
 
-  if (steinhart > 30 && distance < 10) {
+  if (steinhart > 22 && distance < 10) {
     //SEND A REQUEST INDICATING CAR SPOT IS OCCUPIED
     if (!client.connect(host, httpPort)) {
       Serial.println("connection failed");
@@ -157,7 +157,7 @@ void loop(void) {
 
 
     // We now create a URI for the request
-    String url = "/posttodb?id=66&longitude=3222&latitude=55&status=1";
+    String url = "/posttodb?id=50&longitude=-0.141136&latitude=51.518220&status=1";
     Serial.print("Requesting URL: ");
     Serial.println(url);
 
@@ -184,8 +184,8 @@ void loop(void) {
 
 
 
-    // We now create a URI for the request
-    String url = "/posttodb?id=66&longitude=3222&latitude=55&status=0";
+    // We now create a URI for the request 51.518220, -0.141136
+    String url = "/posttodb?id=50&longitude=-0.141136&latitude=51.518220&status=0";
     Serial.print("Requesting URL: ");
     Serial.println(url);
 
