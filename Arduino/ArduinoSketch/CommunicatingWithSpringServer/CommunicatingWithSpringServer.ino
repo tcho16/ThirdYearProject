@@ -8,10 +8,12 @@
 
 #include <ESP8266WiFi.h>
 
-const char* ssid     = "SKY1DA94";
+/*Lenovo P2 for ssid when demoing. SKY1DA94 when at home*/
+const char* ssid     = "Lenovo P2";
 const char* password = "TXXXYABR";
 
-const char* host = "192.168.0.11";
+/*Host changes everytime when connecting to a different network. Be wary*/
+const char* host = "192.168.43.49";
 
 void setup() {
   Serial.begin(9600);
@@ -28,8 +30,10 @@ void setup() {
      would try to act as both a client and an access-point and could cause
      network-issues with your other WiFi-devices on your WiFi-network. */
   WiFi.mode(WIFI_STA);
+  /*User ssid, password when connecting to home wifi. Use only ssid when connecting to hotspot
   WiFi.begin(ssid, password);
-  
+  */
+  Wifi.being(ssid);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
