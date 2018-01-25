@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String listOfBays = preferences.getString("listOfSavedBays", "");
         ObjectMapper mapper = new ObjectMapper();
-        if (!listOfBays.equals("")) {
+        if (listOfResponses.size() == 0 || !listOfBays.equals("")) {
             try {
                 listOfResponses = new ArrayList<>(Arrays.asList(mapper.readValue(listOfBays, SensorResponse[].class)));
                 printToast(getApplicationContext(), "Successfully loaded data", Toast.LENGTH_SHORT);
@@ -204,8 +204,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             //USE ML ON SAVED PARKING BAYS
             googleMap.clear();
-            loadPref();
-            //predictBaysUsingML();
+            if(listOfResponses.size() == 0){loadPref();}
+            predictBaysUsingML();
             updateMap(listOfResponses);
             printToast(getApplicationContext(), "Turn on the internet. Using machine learning on the bays.", Toast.LENGTH_SHORT);
         }
@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void sendRequestToServer() {
         // http://10.100.150.208:8080/alljsonresult <-- uni IPv4
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.43.49:8080/alljsonresult",
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.0.11:8080/alljsonresult",
                 (String response) -> {
                     try {
                         ObjectMapper mapper = new ObjectMapper();
@@ -222,7 +222,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
                         listOfResponses = new ArrayList<>(Arrays.asList(mapper.readValue(response, SensorResponse[].class)));
                         //Log.d("ML",listOfResponses.get(0).getMap().get(44).toString());
-                        populateHashMap(listOfResponses);
+                        populateLists(listOfResponses);
+                        calculateCoefficients();
                         googleMap.clear();
                         updateMap(listOfResponses);
 
@@ -242,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 },
                 (VolleyError error) -> {
                     CharSequence text = "Failed to connect to the service! Using ML";
-                    //updateMapUsingML();
+                    predictBaysUsingML();
                     googleMap.clear();
                     updateMap(listOfResponses);
                     printToast(getApplicationContext(), text, Toast.LENGTH_SHORT);
@@ -251,15 +252,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         requestQueue.add(stringRequest);
     }
 
-    //This method populates the hashmap already in the SensorResponse object.
-    //The key is the time converted into minutes and the value is the status
-    private void populateHashMap(List<SensorResponse> listOfResponses) {
-        for (SensorResponse parkingBay: listOfResponses) {
+    //This method populates the arrays already in the SensorResponse object.
+    //One array refers to time and the other array refers to status at that particular time
+    private void populateLists(List<SensorResponse> listOfResponses) {
+        for (SensorResponse parkingBay : listOfResponses) {
             //Logic:
-            //Get list all timings its been used
-            //parse the timings to get time in minutes and the status
-            //populate relevant parts on the hashmap
-            for(int j = 0; j < parkingBay.getTimeDateOfUsage().size(); j = j+2){
+            //Get list of all timings that has been used
+            //parse the timings to get time in minutes and get the status
+            //populate relevant parts of the arrays
+            for (int j = 0; j < parkingBay.getTimeDateOfUsage().size(); j = j + 2) {
                 //convert every element in odd position to mintues
                 //get the corresponding next element and place both of them in the map
                 Date date = null;
@@ -273,37 +274,46 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 int convertedToMinutes = (Integer.parseInt(splitTime[0]) * 60) + (Integer.parseInt(splitTime[1]));
                 int currentIteration = j + 1;
                 int status = Integer.parseInt(parkingBay.getTimeDateOfUsage().get(currentIteration));
-                parkingBay.getMap().put(convertedToMinutes,status);
-            }
 
+                if (status == 1) {
+                    parkingBay.statusYAxis[convertedToMinutes] = 1;
+                }
+            }
         }
     }
 
+    private void calculateCoefficients() {
+        MachineLearningBay ml = new MachineLearningBay(listOfResponses);
+        ml.calculateMachineLearning();
+    }
+
     private void predictBaysUsingML() {
-        double betaZero = 0.7287119626;
-        double betaOne = -0.000380228529892768;
         float currentTime = getCurrentTime();
-        Log.d("time", currentTime + " CURRENTT");
 
-        double prediction = (Math.exp(betaZero + betaOne * currentTime)) / (1 + Math.exp(betaZero + betaOne * currentTime));
-        Log.d("time", prediction + "This is the predrection");
-        DecimalFormat df = new DecimalFormat("#.###");
-        Log.d("time", df.format(prediction) + " decimal Format");
+        if (0 != listOfResponses.size()) {
 
+            for (SensorResponse parkingBay : listOfResponses) {
+                double prediction = 1 / (1 + Math.exp(-(parkingBay.betaZero + parkingBay.betaOne * currentTime)));
+                DecimalFormat df = new DecimalFormat("#.#####");
+                double percentage = (Double.parseDouble(df.format(prediction)) / 1) * 100;
 
-        MarkerOptions marker = new MarkerOptions()
-                .position(new LatLng(
-                        51.514471, -0.110893
-                ))
-                .title("Parking Bay for ID: 4 ML" + df.format(prediction) + " chance of being occupied");
-        if (prediction > 0.5) {
-            //occupied
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                MarkerOptions marker = new MarkerOptions()
+                        .position(new LatLng(
+                                Double.parseDouble(parkingBay.getLatitude()), Double.parseDouble(parkingBay.getLongitude())
+                        ))
+                        .title(percentage + " chance of being occupied");
+                if (prediction >= 0.5) {
+                    //occupied
+                    marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                } else {
+                    marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                }
+
+                googleMap.addMarker(marker);
+            }
         } else {
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+            printToast(getApplicationContext(), "No saved data.", Toast.LENGTH_SHORT);
         }
-
-        googleMap.addMarker(marker);
     }
 
     public static void printToast(Context context, CharSequence text, int duration) {
