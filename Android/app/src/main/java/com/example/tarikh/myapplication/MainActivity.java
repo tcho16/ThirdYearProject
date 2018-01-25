@@ -41,10 +41,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
@@ -219,6 +221,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             listOfResponses.clear();
                         }
                         listOfResponses = new ArrayList<>(Arrays.asList(mapper.readValue(response, SensorResponse[].class)));
+                        //Log.d("ML",listOfResponses.get(0).getMap().get(44).toString());
+                        populateHashMap(listOfResponses);
                         googleMap.clear();
                         updateMap(listOfResponses);
 
@@ -238,12 +242,41 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 },
                 (VolleyError error) -> {
                     CharSequence text = "Failed to connect to the service! Using ML";
+                    //updateMapUsingML();
                     googleMap.clear();
                     updateMap(listOfResponses);
                     printToast(getApplicationContext(), text, Toast.LENGTH_SHORT);
                 }
         );
         requestQueue.add(stringRequest);
+    }
+
+    //This method populates the hashmap already in the SensorResponse object.
+    //The key is the time converted into minutes and the value is the status
+    private void populateHashMap(List<SensorResponse> listOfResponses) {
+        for (SensorResponse parkingBay: listOfResponses) {
+            //Logic:
+            //Get list all timings its been used
+            //parse the timings to get time in minutes and the status
+            //populate relevant parts on the hashmap
+            for(int j = 0; j < parkingBay.getTimeDateOfUsage().size(); j = j+2){
+                //convert every element in odd position to mintues
+                //get the corresponding next element and place both of them in the map
+                Date date = null;
+                try {
+                    date = new SimpleDateFormat("dd/MM/yy HH:mm:ss").parse(parkingBay.getTimeDateOfUsage().get(j));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                String newString = new SimpleDateFormat("HH:mm").format(date);
+                String[] splitTime = newString.split(":");
+                int convertedToMinutes = (Integer.parseInt(splitTime[0]) * 60) + (Integer.parseInt(splitTime[1]));
+                int currentIteration = j + 1;
+                int status = Integer.parseInt(parkingBay.getTimeDateOfUsage().get(currentIteration));
+                parkingBay.getMap().put(convertedToMinutes,status);
+            }
+
+        }
     }
 
     private void predictBaysUsingML() {

@@ -1,9 +1,24 @@
 package com.example.tarikh.myapplication;
 
+import java.net.Inet4Address;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SensorResponse {
+
+    private HashMap<Integer, Integer> mapToUseForML = new HashMap<>();
+
+    public SensorResponse(){
+        for(int i = 1; i <= 1440; i++){
+            //By default it the bay is vacant
+            mapToUseForML.put(i,0);
+        }
+    }
+
+    public HashMap<Integer,Integer> getMap(){
+        return mapToUseForML;
+    }
 
     private String id;
 
