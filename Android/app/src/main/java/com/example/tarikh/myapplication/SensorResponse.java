@@ -3,22 +3,32 @@ package com.example.tarikh.myapplication;
 import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class SensorResponse {
 
-    private HashMap<Integer, Integer> mapToUseForML = new HashMap<>();
+    //private Map<Integer, Integer> mapToUseForML = new LinkedHashMap<>();
+    public Integer[] timeXAxis = new Integer[1440];
+    public Integer[] statusYAxis = new Integer[1440];
+
+
+    public double betaZero = 0.0;
+    public double betaOne = 0.0;
 
     public SensorResponse(){
-        for(int i = 1; i <= 1440; i++){
-            //By default it the bay is vacant
-            mapToUseForML.put(i,0);
+        for(int i = 1; i < 1440; i++){
+            //By default it the bay is vacant hence status is 0
+            timeXAxis[i] = i;
+            statusYAxis[i] = 0;
         }
     }
 
-    public HashMap<Integer,Integer> getMap(){
-        return mapToUseForML;
-    }
+//    public Map<Integer,Integer> getMap(){
+//        return mapToUseForML;
+//    }
 
     private String id;
 
