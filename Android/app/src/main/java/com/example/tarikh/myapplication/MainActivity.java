@@ -210,7 +210,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void sendRequestToServer() {
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.0.11:8080/alljsonresult",
+        // http://10.100.150.208:8080/alljsonresult <-- uni IPv4
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.43.49:8080/alljsonresult",
                 (String response) -> {
                     try {
                         ObjectMapper mapper = new ObjectMapper();
