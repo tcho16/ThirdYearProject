@@ -1,0 +1,116 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package machinelearning;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+/**
+ *
+ * @author Yasmeen
+ */
+public class MachineLearning {
+    static List<String> time = new ArrayList<>();
+    static List<String> status = new ArrayList<>();
+    static List<String> combined = new ArrayList<>();
+
+    public static void generateTime() {
+        for (int h = 1; h < 1440; h++) {
+            time.add(String.valueOf(h));
+        }
+    }
+
+    public static void generateStatus() {
+        
+        for (int i = 0; i < time.size(); i++) {
+            if(i<237){
+            status.add("0");
+            }else if(i >=237 && i < 267){
+            status.add("1");
+            }else if(i >= 267 && i <532){
+            status.add("0");
+            }else if(i>=532 && i< 591){
+            status.add("1");
+            }else if(i >= 591 && i <768){
+            status.add("0");
+            }else if(i >= 768 && i<1007){
+            status.add("1");
+            }else if(i >= 1007 && i < 1034){
+            status.add("0");
+            }else if(i>=1034 && i < 1211){
+            status.add("1");
+            }else if(i>=1211 && i < 1240){
+            status.add("0");
+            }else if(i >= 1240 && i < time.size()){
+            status.add("1");
+            }
+        }
+    }
+    static float prediction = 0;
+    static float output = 0;
+    static float b0 = 0.00f;
+    static float b1 = 0.00f;
+    
+    
+    
+    public static void main(String[] args) {
+        for(int i =1 ; i <= 1440; i++){
+            time.add(String.valueOf(i));
+        }
+        //generateTime();
+        generateStatus();
+        
+         int epoch = 0;
+        float alpha = 0.00003f;
+        
+        //00003f
+        //2
+        
+        //0.0000003f
+        //3
+        
+        
+        
+        while (epoch <3) {
+            int i = 0;
+            while (i < time.size()) {
+                //CALCULATING PREDICTION
+                output = (float) (b0 + (b1 * Integer.parseInt(time.get(i))));
+                prediction = (float) (1 / (1 + Math.exp(-output)));
+                System.out.println("Prediction == " + prediction);
+
+                //REFINEMENT OF COEFFICIENTS
+                b0 = b0 + alpha * (Integer.parseInt(status.get(i)) - prediction) * prediction * (1 - prediction) * 1.00f;
+                b1 = (float) (b1 + alpha * (Integer.parseInt(status.get(i)) - prediction) * prediction * (1 - prediction) * Integer.parseInt(time.get(i)));
+
+                i++;
+            }
+            epoch++;
+        }
+        
+        System.out.println(b0 + "=" + b1 + "=====================");
+        Calendar calandar = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+        System.out.println(simpleDateFormat.format(calandar.getTime()) + "Time is <-");
+        
+        //-4.098962296
+//0.00556867312
+        
+        for(int i = 0; i < time.size(); i ++){
+            
+        
+            output = (float) (b0 + (b1 * Integer.valueOf(time.get(i))));
+            prediction = (float) (1 / (1 + Math.exp(-output)));
+            System.out.println("Prediction when x is " + i+ "= " + prediction*100);
+            
+        }
+        
+            
+    }
+    
+}
