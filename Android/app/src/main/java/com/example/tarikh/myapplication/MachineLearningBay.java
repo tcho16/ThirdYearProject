@@ -17,36 +17,30 @@ public class MachineLearningBay {
 
     public void calculateMachineLearning(){
         for (SensorResponse parkingBay:listOfSensor) {
-            parkingBay.betaOne = 0.0;
-            parkingBay.betaZero = 0.0;
+            parkingBay.betaOne = 0.0f;
+            parkingBay.betaZero = 0.0f;
 
-        double output = 0.0;
-        double prediction = 0.0;
+        float output = 0.0f;
+        float prediction = 0.0f;
 
         int epoch = 0;
-        double alpha = 0.3;
+            float alpha = 0.0000003f;
 
         //Calculating prediction
-            while(epoch < 10){
+            while(epoch < 3){
                 int i = 1;
                 while(i < parkingBay.timeXAxis.length){
 
-                    output = parkingBay.betaZero + (parkingBay.betaOne * parkingBay.timeXAxis[i]);
-                    prediction = (1/(1+ Math.exp(-output)));
+                    output = (float) parkingBay.betaZero + (parkingBay.betaOne * parkingBay.timeXAxis[i]);
+                    prediction = (float) (1/(1+ Math.exp(-output)));
 
                     //Refining Coefficients
-                    parkingBay.betaZero = parkingBay.betaZero + alpha  * (parkingBay.statusYAxis[i] - prediction) * prediction * (1-prediction) * 1.00;
-                    parkingBay.betaOne = (parkingBay.betaOne + alpha * (parkingBay.statusYAxis[i] - prediction) * prediction * (1 - prediction) * parkingBay.timeXAxis[i]);
+                    parkingBay.betaZero = parkingBay.betaZero + alpha  * (parkingBay.statusYAxis[i] - prediction) * prediction * (1-prediction) * 1.00f;
+                    parkingBay.betaOne =(float) (parkingBay.betaOne + alpha * (parkingBay.statusYAxis[i] - prediction) * prediction * (1 - prediction) * parkingBay.timeXAxis[i]);
                     i++;
                 }
                 epoch++;
             }
-
-
-
-
-
-
 
         }
     }

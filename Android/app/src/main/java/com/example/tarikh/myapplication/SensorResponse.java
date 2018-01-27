@@ -15,8 +15,8 @@ public class SensorResponse {
     public Integer[] statusYAxis = new Integer[1440];
 
 
-    public double betaZero = 0.0;
-    public double betaOne = 0.0;
+    public float betaZero = 0.0f;
+    public float betaOne = 0.0f;
 
     public SensorResponse(){
         for(int i = 1; i < 1440; i++){
