@@ -75,18 +75,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.go);
+       // FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+       // fab.setImageResource(R.drawable.go);
         textViewService = findViewById(R.id.textViewServiceOutput);
         location = findViewById(R.id.addressLookUp);
 
 
-        fab.setOnClickListener(view -> setUpListener());
+       // fab.setOnClickListener(view -> setUpListener());
 
     }
 
-
-    private void setUpListener() {
+    //Method is called when search location button is clicked
+    public void searchLocationButtonOnClick(View view) {
         ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
 
