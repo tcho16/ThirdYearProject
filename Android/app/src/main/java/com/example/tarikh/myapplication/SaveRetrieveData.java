@@ -3,6 +3,7 @@ package com.example.tarikh.myapplication;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,12 +25,13 @@ public class SaveRetrieveData {
         String jsonList = "";
         try {
             jsonList = mapper.writeValueAsString(listOfResponses).toString();
+            Log.d("SAVE", "SAVING: " + jsonList);
+            edit.putString("listOfSavedBays", jsonList);
+            edit.commit();
         } catch (JsonProcessingException e) {
             MainActivity.printToast(ctx, "Error saving data", Toast.LENGTH_SHORT);
             e.printStackTrace();
         }
-        edit.putString("listOfSavedBays", jsonList);
-        edit.apply();
     }
 
     public static void clearSharedPreferences(Context ctx){
@@ -43,18 +45,17 @@ public class SaveRetrieveData {
         ArrayList<SensorBay> returnSensorBayList = new ArrayList<>();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
         String listOfBays = preferences.getString("listOfSavedBays", null);
+        Log.d("SAVE","LOADING: " + listOfBays);
         ObjectMapper mapper = new ObjectMapper();
-        if (//listOfResponses.size() == 0 ||
-                !listOfBays.equals(null)) {
+
             try {
                 returnSensorBayList = new ArrayList<>(Arrays.asList(mapper.readValue(listOfBays, SensorBay[].class)));
                 MainActivity.printToast(ctx, "Successfully loaded data", Toast.LENGTH_SHORT);
             } catch (IOException e) {
-                MainActivity.printToast(ctx,"Not saved data to load.", Toast.LENGTH_SHORT);
+                MainActivity.printToast(ctx,"No saved data to load.", Toast.LENGTH_SHORT);
                 e.printStackTrace();
             }
 
-        }
         return returnSensorBayList;
     }
 }
