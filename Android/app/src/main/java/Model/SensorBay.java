@@ -1,4 +1,4 @@
-package com.example.tarikh.myapplication;
+package Model;
 
 import java.net.Inet4Address;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class SensorResponse {
+public class SensorBay {
 
     //private Map<Integer, Integer> mapToUseForML = new LinkedHashMap<>();
     public Integer[] timeXAxis = new Integer[1440];
@@ -18,7 +18,7 @@ public class SensorResponse {
     public float betaZero = 0.0f;
     public float betaOne = 0.0f;
 
-    public SensorResponse(){
+    public SensorBay(){
         for(int i = 1; i < 1440; i++){
             //By default it the bay is vacant hence status is 0
             timeXAxis[i] = i;

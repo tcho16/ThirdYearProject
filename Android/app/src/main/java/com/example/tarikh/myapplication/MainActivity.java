@@ -49,6 +49,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import Model.SensorBay;
+
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private TextView textViewService;
     private GoogleMap googleMap;
     private ArrayList<MarkerOptions> markers;
-    private List<SensorResponse> listOfResponses;
+    private List<SensorBay> listOfResponses;
     private EditText location;
 
     @Override
@@ -112,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ObjectMapper mapper = new ObjectMapper();
         if (listOfResponses.size() == 0 || !listOfBays.equals("")) {
             try {
-                listOfResponses = new ArrayList<>(Arrays.asList(mapper.readValue(listOfBays, SensorResponse[].class)));
+                listOfResponses = new ArrayList<>(Arrays.asList(mapper.readValue(listOfBays, SensorBay[].class)));
                 printToast(getApplicationContext(), "Successfully loaded data", Toast.LENGTH_SHORT);
             } catch (IOException e) {
                 printToast(getApplicationContext(), "Did not load data successfully", Toast.LENGTH_SHORT);
@@ -163,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    private void updateMap(List<SensorResponse> res) {
+    private void updateMap(List<SensorBay> res) {
         markers.clear();
 
         for (int i = 0; i < res.size(); i++) {
@@ -223,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         if (listOfResponses != null) {
                             listOfResponses.clear();
                         }
-                        listOfResponses = new ArrayList<>(Arrays.asList(mapper.readValue(response, SensorResponse[].class)));
+                        listOfResponses = new ArrayList<>(Arrays.asList(mapper.readValue(response, SensorBay[].class)));
                         //Log.d("ML",listOfResponses.get(0).getMap().get(44).toString());
                         populateLists(listOfResponses);
 
@@ -256,10 +258,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         requestQueue.add(stringRequest);
     }
 
-    //This method populates the arrays already in the SensorResponse object.
+    //This method populates the arrays already in the SensorBay object.
     //One array refers to time and the other array refers to status at that particular time
-    private void populateLists(List<SensorResponse> listOfResponses) {
-        for (SensorResponse parkingBay : listOfResponses) {
+    private void populateLists(List<SensorBay> listOfResponses) {
+        for (SensorBay parkingBay : listOfResponses) {
             //Logic:
             //Get list of all timings that has been used
             //parse the timings to get time in minutes and get the status
@@ -301,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (0 != listOfResponses.size()) {
             googleMap.clear();
-            for (SensorResponse parkingBay : listOfResponses) {
+            for (SensorBay parkingBay : listOfResponses) {
                 double prediction = 1 / (1 + Math.exp(-(parkingBay.betaZero + parkingBay.betaOne * currentTime)));
                 DecimalFormat df = new DecimalFormat("#.#####");
                 //double percentage = (Double.parseDouble(df.format(prediction)) / 1) * 100;

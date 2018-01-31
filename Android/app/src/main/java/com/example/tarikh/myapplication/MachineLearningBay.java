@@ -3,20 +3,22 @@ package com.example.tarikh.myapplication;
 
 import java.util.List;
 
+import Model.SensorBay;
+
 //This class is responsible for the Machine learning. It it using
 //the logistic regression algorithm in combination with the
 //stochastic gradient descent algorithm for training.
 public class MachineLearningBay {
-    private List<SensorResponse> listOfSensor;
+    private List<SensorBay> listOfSensor;
 
 
 
-    public MachineLearningBay(List<SensorResponse> res) {
+    public MachineLearningBay(List<SensorBay> res) {
         listOfSensor = res;
     }
 
     public void calculateMachineLearning(){
-        for (SensorResponse parkingBay:listOfSensor) {
+        for (SensorBay parkingBay:listOfSensor) {
             parkingBay.betaOne = 0.0f;
             parkingBay.betaZero = 0.0f;
 
