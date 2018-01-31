@@ -47,57 +47,13 @@ import java.util.List;
 import Model.SensorBay;
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallback {
 
     private RequestQueue requestQueue;
     private GoogleMap googleMap;
     private ArrayList<MarkerOptions> markers;
     private List<SensorBay> listOfResponses;
     private EditText location;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        requestQueue = Volley.newRequestQueue(this);
-        markers = new ArrayList<>();
-        listOfResponses = new ArrayList<>();
-
-        setContentView(R.layout.activity_main);
-        location = findViewById(R.id.addressLookUp);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        setSupportActionBar(toolbar);
-        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
-        mapFragment.getMapAsync(this);
-
-        //Loading data if present
-        if(PreferenceManager.getDefaultSharedPreferences(this).contains("listOfSavedBays")){
-            listOfResponses = SaveRetrieveData.loadData(this);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        //SaveRetrieveData.clearSharedPreferences(this);
-        SaveRetrieveData.saveData(this,listOfResponses);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        //SaveRetrieveData.clearSharedPreferences(this);
-        //SaveRetrieveData.saveData(this,listOfResponses);
-    }
-
-    @Override
-    public void onDestroy() {
-
-        super.onDestroy();
-        //SaveRetrieveData.clearSharedPreferences(this);
-        //SaveRetrieveData.saveData(this,listOfResponses);
-    }
 
     @Override
     public void onMapReady(GoogleMap map) {
@@ -120,6 +76,37 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         googleMap.setMyLocationEnabled(true);
     }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        requestQueue = Volley.newRequestQueue(this);
+        markers = new ArrayList<>();
+        listOfResponses = new ArrayList<>();
+
+        setContentView(R.layout.activity_main);
+        location = findViewById(R.id.addressLookUp);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
+        mapFragment.getMapAsync(this);
+
+        //Loading data if present
+        if(PreferenceManager.getDefaultSharedPreferences(this).contains("listOfSavedBays")){
+            listOfResponses = SaveRetrieveData.loadData(this);
+
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        SaveRetrieveData.saveData(this,listOfResponses);
+    }
+
+
 
     //Method is called when search location button is clicked
     public void searchLocationButtonOnClick(View view) {
@@ -199,7 +186,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             listOfResponses.clear();
                         }
                         listOfResponses = new ArrayList<>(Arrays.asList(mapper.readValue(response, SensorBay[].class)));
-                        //Log.d("ML",listOfResponses.get(0).getMap().get(44).toString());
                         populateLists(listOfResponses);
 
                         googleMap.clear();

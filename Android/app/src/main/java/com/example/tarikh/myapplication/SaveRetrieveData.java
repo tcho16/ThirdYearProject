@@ -29,7 +29,7 @@ public class SaveRetrieveData {
             edit.putString("listOfSavedBays", jsonList);
             edit.commit();
         } catch (JsonProcessingException e) {
-            MainActivity.printToast(ctx, "Error saving data", Toast.LENGTH_SHORT);
+            ParkingBayMain.printToast(ctx, "Error saving data", Toast.LENGTH_SHORT);
             e.printStackTrace();
         }
     }
@@ -50,9 +50,9 @@ public class SaveRetrieveData {
 
             try {
                 returnSensorBayList = new ArrayList<>(Arrays.asList(mapper.readValue(listOfBays, SensorBay[].class)));
-                MainActivity.printToast(ctx, "Successfully loaded data", Toast.LENGTH_SHORT);
+                ParkingBayMain.printToast(ctx, "Successfully loaded data", Toast.LENGTH_SHORT);
             } catch (IOException e) {
-                MainActivity.printToast(ctx,"No saved data to load.", Toast.LENGTH_SHORT);
+                ParkingBayMain.printToast(ctx,"No saved data to load.", Toast.LENGTH_SHORT);
                 e.printStackTrace();
             }
 

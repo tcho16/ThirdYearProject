@@ -47,7 +47,7 @@ public class LocationLatLong {
             double lat = address.getLatitude();
             double lon = address.getLongitude();
         }else{
-            MainActivity.printToast(ctx,"Error parsing address. Make sure internet is turned on.", Toast.LENGTH_SHORT);
+            ParkingBayMain.printToast(ctx,"Error parsing address. Make sure internet is turned on.", Toast.LENGTH_SHORT);
         }
 
     }

@@ -15,7 +15,7 @@ import java.util.List;
 
 import Model.SensorBay;
 
-import static com.example.tarikh.myapplication.MainActivity.getCurrentTime;
+import static com.example.tarikh.myapplication.ParkingBayMain.getCurrentTime;
 
 //This class is responsible for the Machine learning. It it using
 //the logistic regression algorithm in combination with the
@@ -86,7 +86,7 @@ public class MachineLearningBay extends AsyncTask<Void, Void, Void> {
                 googleMap.addMarker(marker);
             }
         } else {
-            MainActivity.printToast(ctx, "No saved data.", Toast.LENGTH_SHORT);
+            ParkingBayMain.printToast(ctx, "No saved data.", Toast.LENGTH_SHORT);
         }
     }
 
