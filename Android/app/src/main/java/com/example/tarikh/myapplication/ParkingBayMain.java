@@ -3,6 +3,7 @@ package com.example.tarikh.myapplication;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.net.ConnectivityManager;
@@ -14,6 +15,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -86,10 +89,12 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
         listOfResponses = new ArrayList<>();
 
         setContentView(R.layout.activity_main);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
         location = findViewById(R.id.addressLookUp);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        setSupportActionBar(toolbar);
+
+
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
         mapFragment.getMapAsync(this);
 
@@ -106,7 +111,23 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
         SaveRetrieveData.saveData(this,listOfResponses);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.menu_main,menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()){
+            case R.id.aboutAppItemID:
+                Intent i = new Intent(this, AboutApp.class);
+                startActivity(i);
+                return true;
+                default:
+                    return super.onOptionsItemSelected(item);
+        }
+    }
 
     //Method is called when search location button is clicked
     public void searchLocationButtonOnClick(View view) {

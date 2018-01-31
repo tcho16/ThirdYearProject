@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.tarikh.myapplication.AboutApp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/my_toolbarSecond"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/holo_blue_dark"
+            android:elevation="4dp"
+            app:titleTextColor="@android:color/black"
+            />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="DEMO of scroll view. Update with meaningful info later on. Thows parking spaces near you in real time. rkghows parking spaces near you in real time. rkghows parking spaces near you in real time. rkghows parking spaces near you in real time. rkghows parking spaces near you in real time. rkghows parking spaces near you in real time. rkghows parking spaces near you in real time. rkghows parking spaces near you in real time. rkghows parking spaces near you in real time. rkghows parking spaces near you in real time. rkghows parking spaces near you in real time. rkghows parking spaces near you in real time. rkghows parking spaces near you in real time. rkghows parking spaces near you in real time. rkghows parking spaces near you in real time. rkghows parking spaces near you in real time. rkghows parking spaces near you in real time. rkghis is an app that shows parking spaces near you in real time. rkgnrglnkrgnknggggggggggggggnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn"
+                    android:textSize="32sp" />
+            </LinearLayout>
+
+
+        </ScrollView>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
