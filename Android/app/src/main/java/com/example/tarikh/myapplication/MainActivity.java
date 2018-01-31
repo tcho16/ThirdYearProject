@@ -55,7 +55,6 @@ import Model.SensorBay;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private RequestQueue requestQueue;
-    private TextView textViewService;
     private GoogleMap googleMap;
     private ArrayList<MarkerOptions> markers;
     private List<SensorBay> listOfResponses;
@@ -64,25 +63,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestQueue = Volley.newRequestQueue(this);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
+        requestQueue = Volley.newRequestQueue(this);
         markers = new ArrayList<>();
         listOfResponses = new ArrayList<>();
+
+        setContentView(R.layout.activity_main);
+        location = findViewById(R.id.addressLookUp);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
         mapFragment.getMapAsync(this);
 
+        //Loading data if present
+        if(PreferenceManager.getDefaultSharedPreferences(this).contains("listOfSavedBays")){
+            Log.d("SAVE","LOADINGDATA");
+            listOfResponses = SaveRetrieveData.loadData(this);
+        }
+    }
 
-       // FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-       // fab.setImageResource(R.drawable.go);
-        textViewService = findViewById(R.id.textViewServiceOutput);
-        location = findViewById(R.id.addressLookUp);
-
-
-       // fab.setOnClickListener(view -> setUpListener());
-
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d("SAVE", "ONPAUSECALLED");
+        SaveRetrieveData.clearSharedPreferences(this);
+        SaveRetrieveData.saveData(this,listOfResponses);
     }
 
     //Method is called when search location button is clicked
@@ -108,37 +114,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .newCameraPosition(cameraPosition));
     }
 
-    private void loadPref() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String listOfBays = preferences.getString("listOfSavedBays", "");
-        ObjectMapper mapper = new ObjectMapper();
-        if (listOfResponses.size() == 0 || !listOfBays.equals("")) {
-            try {
-                listOfResponses = new ArrayList<>(Arrays.asList(mapper.readValue(listOfBays, SensorBay[].class)));
-                printToast(getApplicationContext(), "Successfully loaded data", Toast.LENGTH_SHORT);
-            } catch (IOException e) {
-                printToast(getApplicationContext(), "Did not load data successfully", Toast.LENGTH_SHORT);
-                e.printStackTrace();
-            }
 
-        }
-    }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor edit = pref.edit();
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonList = "";
-        try {
-            jsonList = mapper.writeValueAsString(listOfResponses).toString();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        edit.putString("listOfSavedBays", jsonList);
-        edit.apply();
-    }
 
     @Override
     public void onMapReady(GoogleMap map) {
@@ -196,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-    //Method gets called when button is pushed.
+    //Method gets called when user wants to search for a bay
     public void callTheService(View view) {
         ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -207,7 +184,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             //USE ML ON SAVED PARKING BAYS
             googleMap.clear();
-            if(listOfResponses.size() == 0){loadPref();}
+            if(listOfResponses.size() == 0){//loadPref();
+            }else{
+                Log.d("SAVE", "FAILED TO GET RESPONSES");
+            }
             calculateCoefficients();
             predictBaysUsingML();
             //updateMap(listOfResponses);
