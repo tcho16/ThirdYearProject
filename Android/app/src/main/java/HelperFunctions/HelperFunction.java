@@ -13,10 +13,9 @@ import Model.SensorBay;
 
 public class HelperFunction {
 
-    public  static float getCurrentTime() {
+    public static float getCurrentTime() {
         Calendar calandar = Calendar.getInstance();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-        //Log.d("time", simpleDateFormat.format(calandar.getTime()) + "Time is <-");
 
         String[] time = simpleDateFormat.format(calandar.getTime()).split(":");
         int hour = Integer.parseInt(time[0]) * 60;
@@ -48,17 +47,18 @@ public class HelperFunction {
                     }else{
                         date = new SimpleDateFormat("dd/MM/yy HH:mm:ss").parse(parkingBay.getTimeDateOfUsage().get(j));
                     }
+                    String newString = new SimpleDateFormat("HH:mm").format(date);
+                    String[] splitTime = newString.split(":");
+                    int convertedToMinutes = (Integer.parseInt(splitTime[0]) * 60) + (Integer.parseInt(splitTime[1]));
+                    int currentIteration = j + 1;
+                    int status = Integer.parseInt(parkingBay.getTimeDateOfUsage().get(currentIteration));
+                    if (status == 1) {
+                        parkingBay.statusYAxis[convertedToMinutes] = 1;
+                    }
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                String newString = new SimpleDateFormat("HH:mm").format(date);
-                String[] splitTime = newString.split(":");
-                int convertedToMinutes = (Integer.parseInt(splitTime[0]) * 60) + (Integer.parseInt(splitTime[1]));
-                int currentIteration = j + 1;
-                int status = Integer.parseInt(parkingBay.getTimeDateOfUsage().get(currentIteration));
-                if (status == 1) {
-                    parkingBay.statusYAxis[convertedToMinutes] = 1;
-                }
+
             }
         }
     }
