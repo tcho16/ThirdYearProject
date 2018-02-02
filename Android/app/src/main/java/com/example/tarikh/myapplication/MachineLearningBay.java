@@ -31,7 +31,7 @@ public class MachineLearningBay extends AsyncTask<Void, Void, Void> {
         this.googleMap = map;
     }
 
-    private void calculateWeightsAndCoefficient(){
+    public void calculateWeightsAndCoefficient(){
         for (SensorBay parkingBay:listOfSensor) {
             parkingBay.betaOne = 0.0f;
             parkingBay.betaZero = 0.0f;
