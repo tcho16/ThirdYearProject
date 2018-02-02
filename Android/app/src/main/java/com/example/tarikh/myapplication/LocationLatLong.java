@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static HelperFunctions.HelperFunction.printToast;
+
 public class LocationLatLong {
 
     String location;
@@ -47,7 +49,7 @@ public class LocationLatLong {
             double lat = address.getLatitude();
             double lon = address.getLongitude();
         }else{
-            ParkingBayMain.printToast(ctx,"Error parsing address. Make sure internet is turned on.", Toast.LENGTH_SHORT);
+            printToast(ctx,"Error parsing address. Make sure internet is turned on.", Toast.LENGTH_SHORT);
         }
 
     }

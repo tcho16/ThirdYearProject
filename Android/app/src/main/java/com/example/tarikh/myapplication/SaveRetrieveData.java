@@ -16,6 +16,8 @@ import java.util.List;
 
 import Model.SensorBay;
 
+import static HelperFunctions.HelperFunction.printToast;
+
 public class SaveRetrieveData {
 
     public static void saveData(Context ctx, List<SensorBay> listOfResponses) {
@@ -29,7 +31,7 @@ public class SaveRetrieveData {
             edit.putString("listOfSavedBays", jsonList);
             edit.commit();
         } catch (JsonProcessingException e) {
-            ParkingBayMain.printToast(ctx, "Error saving data", Toast.LENGTH_SHORT);
+            printToast(ctx, "Error saving data", Toast.LENGTH_SHORT);
             e.printStackTrace();
         }
     }
@@ -50,9 +52,9 @@ public class SaveRetrieveData {
 
             try {
                 returnSensorBayList = new ArrayList<>(Arrays.asList(mapper.readValue(listOfBays, SensorBay[].class)));
-                ParkingBayMain.printToast(ctx, "Successfully loaded data", Toast.LENGTH_SHORT);
+                printToast(ctx, "Successfully loaded data", Toast.LENGTH_SHORT);
             } catch (IOException e) {
-                ParkingBayMain.printToast(ctx,"No saved data to load.", Toast.LENGTH_SHORT);
+                printToast(ctx,"No saved data to load.", Toast.LENGTH_SHORT);
                 e.printStackTrace();
             }
 

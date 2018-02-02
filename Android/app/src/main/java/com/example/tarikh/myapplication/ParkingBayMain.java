@@ -49,6 +49,9 @@ import java.util.List;
 
 import Model.SensorBay;
 
+import static HelperFunctions.HelperFunction.populateLists;
+import static HelperFunctions.HelperFunction.printToast;
+
 
 public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -94,12 +97,11 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
         location = findViewById(R.id.addressLookUp);
 
 
-
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
         mapFragment.getMapAsync(this);
 
         //Loading data if present
-        if(PreferenceManager.getDefaultSharedPreferences(this).contains("listOfSavedBays")){
+        if (PreferenceManager.getDefaultSharedPreferences(this).contains("listOfSavedBays")) {
             listOfResponses = SaveRetrieveData.loadData(this);
 
         }
@@ -108,24 +110,24 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
     @Override
     public void onPause() {
         super.onPause();
-        SaveRetrieveData.saveData(this,listOfResponses);
+        SaveRetrieveData.saveData(this, listOfResponses);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.menu_main,menu);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch(item.getItemId()){
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             case R.id.aboutAppItemID:
                 Intent i = new Intent(this, AboutApp.class);
                 startActivity(i);
                 return true;
-                default:
-                    return super.onOptionsItemSelected(item);
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -235,60 +237,11 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
         requestQueue.add(stringRequest);
     }
 
-    //This method populates the arrays in the SensorBay object.
-    //One array refers to time and the other array refers to status at that particular time
-    //Logic:
-    //Get list of all timings that has been used
-    //parse the timings to get time in minutes and get the status
-    //populate relevant parts of the arrays
-    //convert every element in odd position to mintues
-    //get the corresponding next element and place both of them in the map
-    private void populateLists(List<SensorBay> listOfResponses) {
-        for (SensorBay parkingBay : listOfResponses) {
-            for (int j = 0; j < parkingBay.getTimeDateOfUsage().size(); j = j + 2) {
-                Date date = null;
-                try {
-                    if(parkingBay.getTimeDateOfUsage().get(j).length() <=6){
-                        date = new SimpleDateFormat("HH:mm").parse(parkingBay.getTimeDateOfUsage().get(j));
-                    }else{
-                        date = new SimpleDateFormat("dd/MM/yy HH:mm:ss").parse(parkingBay.getTimeDateOfUsage().get(j));
-                    }
-                } catch (ParseException e) {
-                    printToast(getApplicationContext(), "error parsing date", Toast.LENGTH_SHORT);
-                }
-                String newString = new SimpleDateFormat("HH:mm").format(date);
-                String[] splitTime = newString.split(":");
-                int convertedToMinutes = (Integer.parseInt(splitTime[0]) * 60) + (Integer.parseInt(splitTime[1]));
-                int currentIteration = j + 1;
-                int status = Integer.parseInt(parkingBay.getTimeDateOfUsage().get(currentIteration));
-                if (status == 1) {
-                    parkingBay.statusYAxis[convertedToMinutes] = 1;
-                }
-            }
-        }
-    }
 
     private void startMachineLearning() {
-        MachineLearningBay ml = new MachineLearningBay(getApplicationContext(),googleMap ,listOfResponses);
+        MachineLearningBay ml = new MachineLearningBay(getApplicationContext(), googleMap, listOfResponses);
         ml.execute();
     }
 
-
-    public static void printToast(Context context, CharSequence text, int duration) {
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
-    }
-
-    public  static float getCurrentTime() {
-        Calendar calandar = Calendar.getInstance();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-        //Log.d("time", simpleDateFormat.format(calandar.getTime()) + "Time is <-");
-
-        String[] time = simpleDateFormat.format(calandar.getTime()).split(":");
-        int hour = Integer.parseInt(time[0]) * 60;
-        float currentTime = hour + Integer.parseInt(time[1]);
-
-        return currentTime;
-    }
 
 }

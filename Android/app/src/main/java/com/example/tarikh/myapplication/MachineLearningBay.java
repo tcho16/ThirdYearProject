@@ -13,9 +13,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
+import HelperFunctions.HelperFunction;
 import Model.SensorBay;
 
-import static com.example.tarikh.myapplication.ParkingBayMain.getCurrentTime;
+import static HelperFunctions.HelperFunction.getCurrentTime;
+import static HelperFunctions.HelperFunction.printToast;
 
 //This class is responsible for the Machine learning. It it using
 //the logistic regression algorithm in combination with the
@@ -86,7 +88,7 @@ public class MachineLearningBay extends AsyncTask<Void, Void, Void> {
                 googleMap.addMarker(marker);
             }
         } else {
-            ParkingBayMain.printToast(ctx, "No saved data.", Toast.LENGTH_SHORT);
+            printToast(ctx, "No saved data.", Toast.LENGTH_SHORT);
         }
     }
 
