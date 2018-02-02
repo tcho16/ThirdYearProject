@@ -20,6 +20,8 @@ import static org.junit.Assert.*;
 public class MachineLearningTest {
 
     List<SensorBay> dummySensorBay;
+    private final int SIX_FORTY_AM = 400;
+    private final int NINE_PM = 1260;
 
     @Before
     public void constructListOfSensorBays(){
@@ -85,8 +87,19 @@ public class MachineLearningTest {
     }
 
     @Test
-    public void shouldProvideAccuratePredictionBasedOnWeights(){
+    public void shouldProvideAccuratePredictionBasedOnMorningTime(){
+        MachineLearningBay ml = new MachineLearningBay(null,null, dummySensorBay);
+        ml.calculateWeightsAndCoefficient();
+        double prediction = 1 / (1 + Math.exp(-(dummySensorBay.get(0).betaZero + dummySensorBay.get(0).betaOne * SIX_FORTY_AM)));
+        assertTrue(prediction < 0.8);
+    }
 
+    @Test
+    public void shouldProvideAccuratePredictionBasedOnEveningTime(){
+        MachineLearningBay ml = new MachineLearningBay(null,null, dummySensorBay);
+        ml.calculateWeightsAndCoefficient();
+        double prediction = 1 / (1 + Math.exp(-(dummySensorBay.get(0).betaZero + dummySensorBay.get(0).betaOne * NINE_PM)));
+        assertTrue(prediction > 0.8);
     }
 
 }
