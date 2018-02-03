@@ -9,12 +9,23 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import Interfaces.TimeHelper;
 import Model.SensorBay;
 
-public class HelperFunction {
+public class HelperFunction{
+
+    private static TimeHelper timeHelper = new TimeHelperImpl();
+
+    public static void loadTime(TimeHelper impl){
+        timeHelper = impl;
+    }
+
+    public static Calendar getInstance(){
+        return timeHelper.getTiming();
+    }
 
     public static float getCurrentTime() {
-        Calendar calandar = Calendar.getInstance();
+        Calendar calandar = HelperFunction.getInstance();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
 
         String[] time = simpleDateFormat.format(calandar.getTime()).split(":");
@@ -62,4 +73,5 @@ public class HelperFunction {
             }
         }
     }
+
 }

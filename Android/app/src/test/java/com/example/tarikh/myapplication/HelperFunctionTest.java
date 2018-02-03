@@ -5,6 +5,8 @@ import junit.framework.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,13 +15,17 @@ import java.util.Calendar;
 import java.util.List;
 
 import HelperFunctions.HelperFunction;
+import HelperFunctions.TimeHelperImpl;
+import Interfaces.TimeHelper;
 import Model.SensorBay;
 
 import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-
+@RunWith(MockitoJUnitRunner.class)
 public class HelperFunctionTest {
 
 
@@ -81,15 +87,41 @@ public class HelperFunctionTest {
     }
 
     @Test
-    public void shouldReturnCorrectMinutesFromTime(){
-        Calendar calandar = Calendar.getInstance();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-        String[] time = simpleDateFormat.format(calandar.getTime()).split(":");
-        int hour = Integer.parseInt(time[0]) * 60;
-        float expectedTime = hour + Integer.parseInt(time[1]);
+    public void shouldReturn180FromThreeAM(){
+        Calendar testCal = Calendar.getInstance();
+        testCal.set(Calendar.HOUR, 03);
+        testCal.set(Calendar.MINUTE, 00);
+        testCal.set(Calendar.SECOND,00);
 
-        float actualTime = HelperFunction.getCurrentTime();
 
-        assertTrue(expectedTime == actualTime);
+        TimeHelper mockObject = mock(TimeHelperImpl.class);
+        HelperFunction.loadTime(mockObject);
+        when(mockObject.getTiming()).thenReturn(testCal);
+
+        float actualResult = HelperFunction.getCurrentTime();
+        float expectedResult = 180f;
+
+        assertTrue(actualResult == expectedResult);
+        }
+
+    @Test
+    public void shouldReturn930FOR330PM(){
+        Calendar testCal = Calendar.getInstance();
+        testCal.set(Calendar.HOUR, 15);
+        testCal.set(Calendar.MINUTE, 30);
+        testCal.set(Calendar.SECOND,00);
+
+
+        TimeHelper mockObject = mock(TimeHelperImpl.class);
+        HelperFunction.loadTime(mockObject);
+        when(mockObject.getTiming()).thenReturn(testCal);
+
+        float actualResult = HelperFunction.getCurrentTime();
+        float expectedResult = 930f;
+
+        assertTrue(actualResult == expectedResult);
     }
+
+
+
 }
