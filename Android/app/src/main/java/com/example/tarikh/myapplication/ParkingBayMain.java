@@ -65,6 +65,9 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
     public void onMapReady(GoogleMap map) {
         googleMap = map;
         setUpMap();
+        if(listOfResponses.size() != 0){
+            updateMap(listOfResponses);
+        }
     }
 
     public void setUpMap() {
@@ -140,8 +143,13 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
 
         if (null != activeNetwork) {
             LocationLatLong loc = new LocationLatLong(String.valueOf(location.getText()), getApplicationContext());
+            try{
             Address address = loc.getAddress();
-            updateCameraPosition(address.getLatitude(), address.getLongitude());
+            updateCameraPosition(address.getLatitude(), address.getLongitude());}
+            catch(IndexOutOfBoundsException e){
+                e.getMessage();
+                printToast(getApplicationContext(), "Incorrect address supplied", Toast.LENGTH_SHORT);
+            }
         } else {
             printToast(getApplicationContext(), "Turn on internet to use this feature", Toast.LENGTH_SHORT);
         }
