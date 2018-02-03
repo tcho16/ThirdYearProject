@@ -18,9 +18,6 @@ public class LocationLatLong {
     String location;
     Context ctx;
     List<Address> list ;
-    public void setLocation(String loc){
-        this.location = loc;
-    }
 
     public LocationLatLong(String loc, Context ctx){
         this.location = loc;
@@ -29,28 +26,22 @@ public class LocationLatLong {
     }
 
     public Address getAddress(){
-        doInBackground();
-        return list.get(0);
+            doInBackground();
+        if(list.size() != 0) {
+            return list.get(0);
+        }else{
+            throw new IndexOutOfBoundsException("Incorrect address supplied.");
+        }
     }
-
 
     private void doInBackground() {
         list.clear();
         Geocoder gc = new Geocoder(ctx);
         try {
             list = gc.getFromLocationName(location,1);
-
         } catch (IOException e) {
             Log.d("location","Failed");
             e.printStackTrace();
         }
-        if(!list.isEmpty()){
-            Address address = list.get(0);
-            double lat = address.getLatitude();
-            double lon = address.getLongitude();
-        }else{
-            printToast(ctx,"Error parsing address. Make sure internet is turned on.", Toast.LENGTH_SHORT);
-        }
-
     }
 }
