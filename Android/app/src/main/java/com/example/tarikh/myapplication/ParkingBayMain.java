@@ -66,7 +66,20 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
         googleMap = map;
         setUpMap();
         if(listOfResponses.size() != 0){
-            updateMap(listOfResponses);
+            ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            if(null != activeNetwork){
+                updateMap(listOfResponses);
+            }else{
+                startMachineLearning();
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(51.514471, -0.110893)).zoom(9).build();
+                googleMap.animateCamera(CameraUpdateFactory
+                        .newCameraPosition(cameraPosition));
+            }
+
         }
     }
 
