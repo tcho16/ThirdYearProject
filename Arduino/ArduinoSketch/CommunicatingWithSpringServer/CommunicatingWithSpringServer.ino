@@ -33,7 +33,7 @@ void setup() {
   /*User ssid, password when connecting to home wifi. Use only ssid when connecting to hotspot
   WiFi.begin(ssid, password);
   */
-  Wifi.being(ssid);
+  WiFi.begin(ssid);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
