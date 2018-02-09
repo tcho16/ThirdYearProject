@@ -78,9 +78,12 @@ public class MachineLearningBay extends AsyncTask<Void, Void, Void> {
                 Log.d("MLL",prediction + "<-- Prediction for: "+ parkingBay.get_id());
                 if (prediction >= 0.8) {
                     //occupied
+                    Log.d("MLL","Occupied");
                     marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                     marker.title("Occupied");
                 } else {
+
+                    Log.d("MLL","Vacant");
                     marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
                     marker.title("Vacant");
                 }
@@ -94,14 +97,14 @@ public class MachineLearningBay extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... voids) {
-
         calculateWeightsAndCoefficient();
         return null;
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        Log.d("ML","EXECUTED MACHINE LEARNING");
+        Log.d("MLL","EXECUTED MACHINE LEARNING");
+        googleMap.clear();
         updateMap();
     }
 }

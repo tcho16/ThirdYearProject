@@ -212,6 +212,8 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
+        //CHANGE LOGIC SO MOBILE DATA IS ALSO INCLUDED!
+        sendRequestToServer();
         if (null != activeNetwork) {
             sendRequestToServer();
         } else {
@@ -222,8 +224,9 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
 
     private void sendRequestToServer() {
         // http://10.100.150.208:8080/alljsonresult <-- uni IPv4
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.0.11:8080/alljsonresult",
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.43.49:8080/alljsonresult",
                 (String response) -> {
+
                     try {
                         ObjectMapper mapper = new ObjectMapper();
                         if (listOfResponses != null) {
@@ -250,7 +253,7 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
                     }
                 },
                 (VolleyError error) -> {
-                    CharSequence text = "Failed to connect to the server! Using machine learning.";
+                    CharSequence text = "Failed to connect to the server!! Using machine learning.";
                     startMachineLearning();
                     printToast(getApplicationContext(), text, Toast.LENGTH_LONG);
                 }
