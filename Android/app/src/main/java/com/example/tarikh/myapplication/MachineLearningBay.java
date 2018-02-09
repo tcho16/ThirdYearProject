@@ -91,7 +91,7 @@ public class MachineLearningBay extends AsyncTask<Void, Void, Void> {
                 googleMap.addMarker(marker);
             }
         } else {
-            printToast(ctx, "No saved data.", Toast.LENGTH_SHORT);
+            printToast(ctx, "No saved data. Unable to use machine learning.", Toast.LENGTH_SHORT);
         }
     }
 
@@ -104,7 +104,6 @@ public class MachineLearningBay extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         Log.d("MLL","EXECUTED MACHINE LEARNING");
-        googleMap.clear();
         updateMap();
     }
 }

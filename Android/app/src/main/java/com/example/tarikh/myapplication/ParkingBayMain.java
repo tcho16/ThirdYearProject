@@ -213,11 +213,10 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
         //CHANGE LOGIC SO MOBILE DATA IS ALSO INCLUDED!
-        sendRequestToServer();
         if (null != activeNetwork) {
             sendRequestToServer();
         } else {
-            printToast(getApplicationContext(), "Turn on the internet. Using machine learning on the bays.", Toast.LENGTH_SHORT);
+            printToast(getApplicationContext(), "Turn on the internet. Using machine learning on the bays.", Toast.LENGTH_LONG);
             startMachineLearning();
         }
     }
@@ -253,7 +252,7 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
                     }
                 },
                 (VolleyError error) -> {
-                    CharSequence text = "Failed to connect to the server!! Using machine learning.";
+                    CharSequence text = "Connection error to server. Using machine learning.";
                     startMachineLearning();
                     printToast(getApplicationContext(), text, Toast.LENGTH_LONG);
                 }
@@ -263,6 +262,7 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
 
 
     private void startMachineLearning() {
+        googleMap.clear();
         MachineLearningBay ml = new MachineLearningBay(getApplicationContext(), googleMap, listOfResponses);
         ml.execute();
     }
