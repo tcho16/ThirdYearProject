@@ -1,0 +1,15 @@
+* Get most categories of parking hours (in hours and minutes)
+* Run algorithms on them and compare and contrast - use XLMiner and Matlab
+* Print screen graphs
+
+
+Findings:
+escort - hourly - not good as not enough random/range in data (XLMiner: 
+	output = (float) (-0.336472236621211 + (-9.8505055044506E-17 * Integer.valueOf(i)));)
+
+social - hourly - decent as there is moderate range of data (XLMindr:
+	output = (float) (-1.99009822751224 + (0.127306037067303 * Integer.valueOf(i)));)
+
+shop - hourly - potential false reading as it shows from midnight to 4pm higher readings than 5pm to 11pm (XLMiner:
+	output = (float) (-0.11440098724974 + (-0.0477475883320572 * Integer.valueOf(i)));
+
