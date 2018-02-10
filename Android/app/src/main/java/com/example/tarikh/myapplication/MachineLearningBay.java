@@ -25,12 +25,14 @@ import static HelperFunctions.HelperFunction.printToast;
 public class MachineLearningBay extends AsyncTask<Void, Void, Void> {
     private List<SensorBay> listOfSensor;
     GoogleMap googleMap;
+    GMap gmap;
     Context ctx;
 
-    public MachineLearningBay(Context ctx, GoogleMap map, List<SensorBay> res) {
+    public MachineLearningBay(Context ctx, GoogleMap map, List<SensorBay> res, GMap gmap) {
         listOfSensor = res;
         this.ctx = ctx;
         this.googleMap = map;
+        this.gmap = gmap;
     }
 
     public void calculateWeightsAndCoefficient(){
@@ -63,38 +65,6 @@ public class MachineLearningBay extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    public void updateMap(){
-        float currentTime = getCurrentTime();
-
-        if (0 != listOfSensor.size()) {
-            googleMap.clear();
-            for (SensorBay parkingBay : listOfSensor) {
-                double prediction = 1 / (1 + Math.exp(-(parkingBay.betaZero + parkingBay.betaOne * currentTime)));
-
-                MarkerOptions marker = new MarkerOptions()
-                        .position(new LatLng(
-                                Double.parseDouble(parkingBay.getLatitude()), Double.parseDouble(parkingBay.getLongitude())
-                        ));
-                Log.d("MLL",prediction + "<-- Prediction for: "+ parkingBay.get_id());
-                if (prediction >= 0.8) {
-                    //occupied
-                    Log.d("MLL","Occupied");
-                    marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                    marker.title("Occupied");
-                } else {
-
-                    Log.d("MLL","Vacant");
-                    marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                    marker.title("Vacant");
-                }
-
-                googleMap.addMarker(marker);
-            }
-        } else {
-            printToast(ctx, "No saved data. Unable to use machine learning.", Toast.LENGTH_SHORT);
-        }
-    }
-
     @Override
     protected Void doInBackground(Void... voids) {
         calculateWeightsAndCoefficient();
@@ -104,6 +74,7 @@ public class MachineLearningBay extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         Log.d("MLL","EXECUTED MACHINE LEARNING");
-        updateMap();
+        gmap.updateMapML(listOfSensor);
+        //updateMap();
     }
 }

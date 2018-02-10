@@ -13,7 +13,6 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -38,12 +37,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
@@ -56,43 +53,63 @@ import Model.SensorBay;
 import static HelperFunctions.HelperFunction.populateLists;
 import static HelperFunctions.HelperFunction.printToast;
 
-//import android.location.LocationListener;
-
-
 public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
+    static final double LondonLat = 51.514471;
+    static final double LondonLon = -0.110893;
+
     private RequestQueue requestQueue;
-    private GoogleMap googleMap;
+    private boolean connectionEstablished;
+    public GoogleMap googleMap;
     private ArrayList<MarkerOptions> markers;
     private List<SensorBay> listOfResponses;
     private EditText location;
     LocationManager lm;
     private FusedLocationProviderClient fusedLocationProviderClient;
+    GMap gMap;
 
     @Override
     public void onMapReady(GoogleMap map) {
         googleMap = map;
         setUpMap();
+        gMap = new GMap(googleMap, getMarkers(), getApplicationContext());
         if (listOfResponses.size() != 0) {
             ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
 
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            if (null != activeNetwork) {
-                updateMap(listOfResponses);
+
+            Log.d("state", String.valueOf(connectionEstablished));
+            Log.d("state", "v:" + String.valueOf(null != activeNetwork));
+            if (null != activeNetwork && connectionEstablished) {
+                gMap.updateMap(googleMap, listOfResponses);
             } else {
                 startMachineLearning();
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(51.514471, -0.110893)).zoom(9).build();
-                googleMap.animateCamera(CameraUpdateFactory
-                        .newCameraPosition(cameraPosition));
+                gMap.updateCameraPos(LondonLat, LondonLon, 9);
             }
-
         }
     }
 
+    private void checkConnectionToServer() {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.43.49:8080/index.html",
+                (String response) -> {
+                    Log.d("state", "ttt");
+                    this.connectionEstablished = true;
+                },
+                (VolleyError error) -> {
+                    Log.d("state", "fff");
+                    this.connectionEstablished = false;
+                }
+        );
+        requestQueue.add(stringRequest);
+    }
+
+    public ArrayList<MarkerOptions> getMarkers() {
+        return markers;
+    }
+
     public void setUpMap() {
-        googleMap.setTrafficEnabled(true);
+        googleMap.setTrafficEnabled(false);
         googleMap.setIndoorEnabled(true);
         googleMap.setBuildingsEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
@@ -117,6 +134,7 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
         markers = new ArrayList<>();
         listOfResponses = new ArrayList<>();
         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        checkConnectionToServer();
 
         setContentView(R.layout.activity_main);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -186,37 +204,6 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
                 .newCameraPosition(cameraPosition));
     }
 
-    private void updateMap(List<SensorBay> res) {
-        markers.clear();
-
-        for (int i = 0; i < res.size(); i++) {
-            markers.add(new MarkerOptions()
-                    .position(new LatLng(
-                            Double.parseDouble(res.get(i).getLatitude()), Double.parseDouble(res.get(i).getLongitude())
-                    ))
-                    .title("Parking Bay for ID: " + res.get(i).get_id())
-            );
-
-            int status = res.get(i).getTimeDateOfUsage().size() - 1;
-            if (Integer.parseInt(res.get(i).getTimeDateOfUsage().get(status)) == 1) {
-                markers.get(i).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-                markers.get(i).title("Occupied");
-            } else {
-                markers.get(i).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                markers.get(i).title("Vacant");
-            }
-        }
-
-        for (MarkerOptions m : markers) {
-            googleMap.addMarker(m);
-        }
-
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(51.514471, -0.110893)).zoom(9).build();
-        googleMap.animateCamera(CameraUpdateFactory
-                .newCameraPosition(cameraPosition));
-    }
-
     //Method gets called when user wants to search for a bay
     public void callTheService(View view) {
         ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
@@ -245,7 +232,9 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
                         populateLists(listOfResponses);
 
                         googleMap.clear();
-                        updateMap(listOfResponses);
+                        GMap gMap = new GMap(googleMap, markers, getApplicationContext());
+                        gMap.updateMap(googleMap, listOfResponses);
+                        //updateMap(listOfResponses);
 
                     } catch (JsonParseException e) {
                         e.printStackTrace();
@@ -273,14 +262,13 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
 
     private void startMachineLearning() {
         googleMap.clear();
-        MachineLearningBay ml = new MachineLearningBay(getApplicationContext(), googleMap, listOfResponses);
+        MachineLearningBay ml = new MachineLearningBay(getApplicationContext(), googleMap, listOfResponses, gMap);
         ml.execute();
     }
 
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Log.d("Distance", "marker was clicked.");
         double longtitude = marker.getPosition().longitude;
         double latitude = marker.getPosition().latitude;
 
@@ -291,7 +279,6 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 
         boolean gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        Log.d("Distance", "before checks");
         //Check if connection is active and check is gps is enabled
         if (null != activeNetwork && true == gpsEnabled) {
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -301,8 +288,7 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
                 location.addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Location location1 = (Location) task.getResult();
-                        //FETCH RESULTS FROM GOOGLE DISTANCE API
-                        fetchResults(longtitude, latitude, location1.getLatitude(), location1.getLongitude());
+                        gMap.drawRoute(longtitude, latitude, location1.getLatitude(), location1.getLongitude());
                     } else {
                         Log.d("Distance", "in else block");
                     }
@@ -310,25 +296,11 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
             } catch (SecurityException e) {
                 e.printStackTrace();
             }
+        } else if (!gpsEnabled) {
+            printToast(getApplicationContext(), "Turn on GPS to use this feature", Toast.LENGTH_SHORT);
         } else {
-            printToast(getApplicationContext(), "Turn on wifi and gps to use routing feature", Toast.LENGTH_LONG);
+            printToast(getApplicationContext(), "Turn on internet and gps to use routing feature", Toast.LENGTH_LONG);
         }
         return false;
-    }
-
-    private void fetchResults(double longtitude, double latitude, double userLatit, double userLong) {
-        Log.d("Distance", "In fetching results");
-        String url = "https://maps.googleapis.com/maps/api/directions/json?origin=" + userLatit + "," + userLong + "&destination=" + latitude + "," + longtitude + "&key=AIzaSyANQCpWEeO_jtzc1voVxb-Zh1j3z42vKFQ";
-        Log.d("Distance", url);
-        StringRequest requestGoogle = new StringRequest(Request.Method.GET, url,
-                (String response) -> {
-                    Log.d("Distance", response);
-                    ParsingDistanceResponse distance = new ParsingDistanceResponse(response, getApplicationContext(), googleMap);
-                    distance.execute();
-                }, (VolleyError) -> {
-            printToast(getApplicationContext(), "Error occurred.", Toast.LENGTH_LONG);
-        }
-        );
-        requestQueue.add(requestGoogle);
     }
 }

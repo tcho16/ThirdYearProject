@@ -1,13 +1,11 @@
 package com.example.tarikh.myapplication;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONException;
@@ -21,14 +19,12 @@ public class ParsingDistanceResponse extends AsyncTask<String, Integer, List<Lis
 
     String response;
     GoogleMap gmap;
-    Context ctx;
     JSONObject jObject;
     List<List<HashMap<String, String>>> routes = null;
 
-    public ParsingDistanceResponse(String response, Context applicationContext, GoogleMap googleMap) {
+    public ParsingDistanceResponse(String response, GoogleMap googleMap) {
         this.response = response;
         gmap = googleMap;
-        ctx = applicationContext;
 
     }
 
@@ -79,8 +75,9 @@ public class ParsingDistanceResponse extends AsyncTask<String, Integer, List<Lis
 
             // Drawing polyline in the Google Map for the i-th route
             if(lineOptions != null) {
+                GMap.lineUpdate(lineOptions);
 
-                gmap.addPolyline(lineOptions);
+                //gmap.addPolyline(lineOptions);
 
             }
             else {
