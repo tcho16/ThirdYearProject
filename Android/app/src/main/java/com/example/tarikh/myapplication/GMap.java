@@ -72,41 +72,6 @@ public class GMap {
                 .newCameraPosition(cameraPosition));
     }
 
-
-    public void updateMapML(List<SensorBay> listOfSensor) {
-            float currentTime = getCurrentTime();
-
-            if (0 != listOfSensor.size()) {
-                gmap.clear();
-                markers.clear();
-                for (SensorBay parkingBay : listOfSensor) {
-                    double prediction = 1 / (1 + Math.exp(-(parkingBay.betaZero + parkingBay.betaOne * currentTime)));
-
-                    MarkerOptions marker = new MarkerOptions()
-                            .position(new LatLng(
-                                    Double.parseDouble(parkingBay.getLatitude()), Double.parseDouble(parkingBay.getLongitude())
-                            ));
-                    Log.d("MLL",prediction + "<-- Prediction for: "+ parkingBay.get_id());
-                    if (prediction >= 0.8) {
-                        //occupied
-                        Log.d("MLL","Occupied");
-                        marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                        marker.title("Occupied");
-                    } else {
-
-                        Log.d("MLL","Vacant");
-                        marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                        marker.title("Vacant");
-                    }
-                    markers.add(marker);
-                    gmap.addMarker(marker);
-                }
-            } else {
-                Log.d("Refactoring", "ELSE BLOCK");
-                //printToast(ctx, "No saved data. Unable to use machine learning.", Toast.LENGTH_SHORT);
-            }
-        }
-
     public void drawRoute(double longtitude, double latitude, double userLatit, double userLong) {
         RequestQueue requestQueue = Volley.newRequestQueue(ctx);
         Log.d("Distance", "In fetching results");
@@ -135,5 +100,12 @@ public class GMap {
         gmap.addPolyline(lineOptions);
 
 
+    }
+
+    public void updateMapKNN(ArrayList<MarkerOptions> markers) {
+        gmap.clear();
+        for(MarkerOptions marker : markers){
+            gmap.addMarker(marker);
+        }
     }
 }

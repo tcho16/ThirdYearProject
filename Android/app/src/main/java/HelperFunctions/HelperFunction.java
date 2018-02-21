@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 import Interfaces.TimeHelper;
+import Model.Bays;
 import Model.SensorBay;
 
 public class HelperFunction{
@@ -63,9 +64,7 @@ public class HelperFunction{
                     int convertedToMinutes = (Integer.parseInt(splitTime[0]) * 60) + (Integer.parseInt(splitTime[1]));
                     int currentIteration = j + 1;
                     int status = Integer.parseInt(parkingBay.getTimeDateOfUsage().get(currentIteration));
-                    if (status == 1) {
-                        parkingBay.statusYAxis[convertedToMinutes] = 1;
-                    }
+                    parkingBay.timeUsage.add(new Bays(convertedToMinutes,status));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }

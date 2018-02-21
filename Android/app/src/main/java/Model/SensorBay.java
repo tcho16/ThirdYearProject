@@ -9,26 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 public class SensorBay {
-
-    //private Map<Integer, Integer> mapToUseForML = new LinkedHashMap<>();
-    public Integer[] timeXAxis = new Integer[1440];
-    public Integer[] statusYAxis = new Integer[1440];
-
-
-    public float betaZero = 0.0f;
-    public float betaOne = 0.0f;
+    public ArrayList<Bays> timeUsage;
 
     public SensorBay(){
-        for(int i = 1; i < 1440; i++){
-            //By default it the bay is vacant hence status is 0
-            timeXAxis[i] = i;
-            statusYAxis[i] = 0;
-        }
-    }
+        timeUsage = new ArrayList<>();
 
-//    public Map<Integer,Integer> getMap(){
-//        return mapToUseForML;
-//    }
+    }
 
     private String id;
 
@@ -58,6 +44,7 @@ public class SensorBay {
     public String toString(){
         return "ID: " + get_id() + ". Longtitude: " + getLongitude() + ". Latitude: " + getLatitude() + ". time: " + getTimeDateOfUsage().toString();
     }
+
 
 }
 
