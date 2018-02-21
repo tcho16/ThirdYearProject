@@ -261,8 +261,7 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
 
 
     private void startMachineLearning() {
-        googleMap.clear();
-        MachineLearningBay ml = new MachineLearningBay(getApplicationContext(), googleMap, listOfResponses, gMap);
+        KNNML ml = new KNNML(getApplicationContext(), googleMap, listOfResponses, gMap);
         ml.execute();
     }
 
