@@ -37,7 +37,7 @@ public class KNNML extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... voids) {
         markers = new ArrayList<>();
         int currentTime = (int) getCurrentTime();
-        Log.d("MLL", "CURRENT KNN TIME: "+ currentTime);
+        Log.d("MLL", "CURRENT KNN TIME: " + currentTime);
 
         for (SensorBay bay : listOfSensor) {
             for (int i = 0; i < bay.timeUsage.size(); i++) {
@@ -47,22 +47,40 @@ public class KNNML extends AsyncTask<Void, Void, Void> {
             Collections.sort(bay.timeUsage);
 
             if (!bay.timeUsage.isEmpty()) {
+                int statusOccupied = 0;
                 MarkerOptions marker = new MarkerOptions()
                         .position(new LatLng(
                                 Double.parseDouble(bay.getLatitude()), Double.parseDouble(bay.getLongitude())
                         ));
 
-                if (bay.timeUsage.get(0).getStatus() == 1) {
-                    //occupied
-                    marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                    marker.title("Occupied");
-
+                //Get the average if size is greater than 10
+                if (bay.timeUsage.size() > 10) {
+                    for (int i = 0; i < 10; i++) {
+                        if (bay.timeUsage.get(i).getStatus() == 1) {
+                            statusOccupied++;
+                        }
+                    }
+                    if (statusOccupied > 5) {
+                        marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        marker.title("Occupied");
+                    } else {
+                        marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                        marker.title("Vacantt");
+                    }
                 } else {
-                    //vacant
-                    marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                    marker.title("Vacantt");
+
+                    if (bay.timeUsage.get(0).getStatus() == 1) {
+                        //occupied
+                        marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        marker.title("Occupied");
+
+                    } else {
+                        //vacant
+                        marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                        marker.title("Vacantt");
+                    }
                 }
-               markers.add(marker);
+                markers.add(marker);
             }
         }
         return null;

@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -67,6 +68,7 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
     LocationManager lm;
     private FusedLocationProviderClient fusedLocationProviderClient;
     GMap gMap;
+    TextView statusOutput;
 
     @Override
     public void onMapReady(GoogleMap map) {
@@ -82,6 +84,7 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
             Log.d("state", String.valueOf(connectionEstablished));
             Log.d("state", "v:" + String.valueOf(null != activeNetwork));
             if (null != activeNetwork && connectionEstablished) {
+                statusOutput.setText("Status: Live");
                 gMap.updateMap(googleMap, listOfResponses);
             } else {
                 startMachineLearning();
@@ -130,6 +133,7 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         requestQueue = Volley.newRequestQueue(this);
         markers = new ArrayList<>();
         listOfResponses = new ArrayList<>();
@@ -141,7 +145,7 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
         setSupportActionBar(myToolbar);
         location = findViewById(R.id.addressLookUp);
 
-
+        statusOutput = findViewById(R.id.textViewServiceOutput);
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
         mapFragment.getMapAsync(this);
 
@@ -231,6 +235,7 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
                         listOfResponses = new ArrayList<>(Arrays.asList(mapper.readValue(response, SensorBay[].class)));
                         populateLists(listOfResponses);
 
+                        statusOutput.setText("Status: Live");
                         googleMap.clear();
                         GMap gMap = new GMap(googleMap, markers, getApplicationContext());
                         gMap.updateMap(googleMap, listOfResponses);
@@ -261,6 +266,7 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
 
 
     private void startMachineLearning() {
+        statusOutput.setText("Status: Offline");
         KNNML ml = new KNNML(getApplicationContext(), googleMap, listOfResponses, gMap);
         ml.execute();
     }
