@@ -163,7 +163,7 @@ void loop(void) {
 
 
     // We now create a URI for the request
-    String url = "/posttodb?id=50&longitude=-0.141136&latitude=51.518220&status=1";
+    String url = "/posttodb?id=59&longitude=2.330469&latitude=46.446416&status=1";
     Serial.print("Requesting URL: ");
     Serial.println(url);
 
@@ -191,7 +191,7 @@ void loop(void) {
 
 
     // We now create a URI for the request 51.518220, -0.141136
-    String url = "/posttodb?id=50&longitude=-0.141136&latitude=51.518220&status=0";
+    String url = "/posttodb?id=59&longitude=2.330469&latitude=46.446416&status=0";
     Serial.print("Requesting URL: ");
     Serial.println(url);
 
