@@ -246,8 +246,8 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
     private void sendRequestToServer() {
         // http://10.100.150.208:8080/alljsonresult <-- uni IPv4
         StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.43.49:8080/alljsonresult",
-        //Log.d("HTTPS","ABOUT TO REQUEST HTTPS");
-        //StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://192.168.43.49:8440/alljsonresult",
+                //Log.d("HTTPS","ABOUT TO REQUEST HTTPS");
+                //StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://192.168.43.49:8440/alljsonresult",
                 (String response) -> {
 
                     try {
