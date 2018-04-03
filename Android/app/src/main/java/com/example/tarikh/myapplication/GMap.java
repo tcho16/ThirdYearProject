@@ -31,17 +31,17 @@ public class GMap {
      Context ctx;
 
     public GMap(GoogleMap gmap, ArrayList<MarkerOptions> markers, Context ctx){
-        this.markers = markers;
+        GMap.markers = markers;
         this.gmap = gmap;
         this.ctx = ctx;
     }
 
 
     public void updateMap(GoogleMap googleMap ,List<SensorBay> res) {
-        markers.clear();
+        GMap.markers.clear();
 
         for (int i = 0; i < res.size(); i++) {
-            markers.add(new MarkerOptions()
+            GMap.markers.add(new MarkerOptions()
                     .position(new LatLng(
                             Double.parseDouble(res.get(i).getLatitude()), Double.parseDouble(res.get(i).getLongitude())
                     ))
@@ -50,15 +50,15 @@ public class GMap {
 
             int status = res.get(i).getTimeDateOfUsage().size() - 1;
             if (Integer.parseInt(res.get(i).getTimeDateOfUsage().get(status)) == 1) {
-                markers.get(i).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-                markers.get(i).title("Occupied");
+                GMap.markers.get(i).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+                GMap.markers.get(i).title("Occupied");
             } else {
-                markers.get(i).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-                markers.get(i).title("Vacant");
+                GMap.markers.get(i).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                GMap.markers.get(i).title("Vacant");
             }
         }
 
-        for (MarkerOptions m : markers) {
+        for (MarkerOptions m : GMap.markers) {
             googleMap.addMarker(m);
         }
 
@@ -94,7 +94,7 @@ public class GMap {
         //draw the line
         //draw the markers from the array
         gmap.clear();
-        for(MarkerOptions m : markers){
+        for(MarkerOptions m : GMap.markers){
             gmap.addMarker(m);
         }
         gmap.addPolyline(lineOptions);
@@ -102,9 +102,9 @@ public class GMap {
 
     }
 
-    public void updateMapKNN(ArrayList<MarkerOptions> markers) {
+    public void updateMapKNN() {
         gmap.clear();
-        for(MarkerOptions marker : markers){
+        for(MarkerOptions marker : GMap.markers){
             gmap.addMarker(marker);
         }
     }

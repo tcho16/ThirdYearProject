@@ -154,7 +154,8 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
         super.onCreate(savedInstanceState);
 
 
-        requestQueue = Volley.newRequestQueue(this, new HurlStack(null, getSocketFactory()));
+        //requestQueue = Volley.newRequestQueue(this, new HurlStack(null, getSocketFactory()));
+        requestQueue = Volley.newRequestQueue(this);
         markers = new ArrayList<>();
         listOfResponses = new ArrayList<>();
         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -244,9 +245,9 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
 
     private void sendRequestToServer() {
         // http://10.100.150.208:8080/alljsonresult <-- uni IPv4
-        //StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.43.49:8080/alljsonresult",
-        Log.d("HTTPS","ABOUT TO REQUEST HTTPS");
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://192.168.43.49:8440/alljsonresult",
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.43.49:8080/alljsonresult",
+        //Log.d("HTTPS","ABOUT TO REQUEST HTTPS");
+        //StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://192.168.43.49:8440/alljsonresult",
                 (String response) -> {
 
                     try {
