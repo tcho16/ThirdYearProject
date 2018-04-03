@@ -2,31 +2,17 @@ package com.westminster.tarikh.parkingbaysensor;
 
 import android.Manifest;
 import android.content.Context;
-<<<<<<< HEAD
 import android.content.pm.PackageManager;
 import android.location.Address;
-=======
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Location;
->>>>>>> 53f9095e9641de0e9bec677bfb91583b0b241cca
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-<<<<<<< HEAD
 import android.util.Log;
-=======
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
->>>>>>> 53f9095e9641de0e9bec677bfb91583b0b241cca
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -35,71 +21,33 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
-<<<<<<< HEAD
-=======
-import com.android.volley.toolbox.HurlStack;
->>>>>>> 53f9095e9641de0e9bec677bfb91583b0b241cca
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.location.FusedLocationProviderClient;
-<<<<<<< HEAD
-=======
-import com.google.android.gms.location.LocationServices;
->>>>>>> 53f9095e9641de0e9bec677bfb91583b0b241cca
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-<<<<<<< HEAD
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
-=======
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.Task;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
->>>>>>> 53f9095e9641de0e9bec677bfb91583b0b241cca
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-<<<<<<< HEAD
-=======
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
-
->>>>>>> 53f9095e9641de0e9bec677bfb91583b0b241cca
 import Model.SensorBay;
 
 import static HelperFunctions.HelperFunction.populateLists;
 import static HelperFunctions.HelperFunction.printToast;
 
-<<<<<<< HEAD
+
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
-=======
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
->>>>>>> 53f9095e9641de0e9bec677bfb91583b0b241cca
+
 
     static final double LondonLat = 51.514471;
     static final double LondonLon = -0.110893;
@@ -118,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-<<<<<<< HEAD
         requestQueue = Volley.newRequestQueue(this);
         setContentView(R.layout.activity_main);
         gMap = new GMap(googleMap, getMarkers(), getApplicationContext());
@@ -127,24 +74,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         markers = new ArrayList<>();
         location = findViewById(R.id.addressLookUp);
         statusOutput = findViewById(R.id.textViewServiceOutput);
-=======
 
 
-        requestQueue = Volley.newRequestQueue(this, new HurlStack(null, getSocketFactory()));
-        markers = new ArrayList<>();
-        listOfResponses = new ArrayList<>();
-        lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         checkConnectionToServer();
 
-        setContentView(R.layout.activity_main);
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
-        location = findViewById(R.id.addressLookUp);
-
-        statusOutput = findViewById(R.id.textViewServiceOutput);
-        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
-        mapFragment.getMapAsync(this);
->>>>>>> 53f9095e9641de0e9bec677bfb91583b0b241cca
 
         //Loading data if present
         if (PreferenceManager.getDefaultSharedPreferences(this).contains("listOfSavedBays")) {
@@ -153,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-<<<<<<< HEAD
+
     public ArrayList<MarkerOptions> getMarkers() {
         return markers;
     }
@@ -185,28 +118,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 gMap.updateCameraPos(LondonLat, LondonLon, 9);
             }
         }
-=======
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        this.googleMap = googleMap;
-        setUpMap();
-        gMap = new GMap(googleMap, getMarkers(), getApplicationContext());
-        if (listOfResponses.size() != 0) {
-            ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
 
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-            Log.d("state", String.valueOf(connectionEstablished));
-            Log.d("state", "v:" + String.valueOf(null != activeNetwork));
-            if (null != activeNetwork && connectionEstablished) {
-                statusOutput.setText("Status: Live");
-                gMap.updateMap(googleMap, listOfResponses);
-            } else {
-                startMachineLearning();
-                gMap.updateCameraPos(LondonLat, LondonLon, 9);
-            }
-        }
     }
 
     private void checkConnectionToServer() {
@@ -223,10 +135,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         requestQueue.add(stringRequest);
     }
 
-    public ArrayList<MarkerOptions> getMarkers() {
-        return markers;
->>>>>>> 53f9095e9641de0e9bec677bfb91583b0b241cca
-    }
+
 
     public void setUpMap() {
         googleMap.setTrafficEnabled(false);
@@ -242,42 +151,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
             return;
         }
-<<<<<<< HEAD
+
         //TODO: UNCOMMENT THIS OUT
         //googleMap.setOnMarkerClickListener(this);
         googleMap.setMyLocationEnabled(true);
     }
 
-=======
-        googleMap.setOnMarkerClickListener(this);
-        googleMap.setMyLocationEnabled(true);
-    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        SaveRetrieveData.saveData(this, listOfResponses);
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.aboutAppItemID:
-                Intent i = new Intent(this, AboutApp.class);
-                startActivity(i);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
->>>>>>> 53f9095e9641de0e9bec677bfb91583b0b241cca
+
     //Method is called when search location button is clicked
     public void searchLocationButtonOnClick(View view) {
         ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
@@ -320,7 +204,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-<<<<<<< HEAD
     private void startMachineLearning() {
         statusOutput.setText("Status: Offline");
         KNNML ml = new KNNML(getApplicationContext(), googleMap, listOfResponses, gMap);
@@ -330,13 +213,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void sendRequestToServer() {
         // http://10.100.150.208:8080/alljsonresult <-- uni IPv4
         StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.43.49:8080/alljsonresult",
-=======
-    private void sendRequestToServer() {
-        // http://10.100.150.208:8080/alljsonresult <-- uni IPv4
-        //StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.43.49:8080/alljsonresult",
-        Log.d("HTTPS","ABOUT TO REQUEST HTTPS");
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://192.168.43.49:8440/alljsonresult",
->>>>>>> 53f9095e9641de0e9bec677bfb91583b0b241cca
                 (String response) -> {
 
                     try {
@@ -376,119 +252,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         requestQueue.add(stringRequest);
     }
 
-<<<<<<< HEAD
-=======
-    private SSLSocketFactory getSocketFactory() {
-
-        CertificateFactory cf = null;
-        try {
-            cf = CertificateFactory.getInstance("X.509");
-            InputStream caInput = getResources().openRawResource(R.raw.publiccert);
-            Certificate ca;
-            try {
-                ca = cf.generateCertificate(caInput);
-                Log.e("CERT", "ca=" + ((X509Certificate) ca).getSubjectDN());
-            } finally {
-                caInput.close();
-            }
-
-
-            String keyStoreType = KeyStore.getDefaultType();
-            KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-            keyStore.load(null, null);
-            keyStore.setCertificateEntry("ca", ca);
-
-
-            String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
-            tmf.init(keyStore);
-
-
-            HostnameVerifier hostnameVerifier = new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-
-                    Log.e("CipherUsed", session.getCipherSuite());
-                    return hostname.compareTo("192.168.43.49")==0;
-
-                }
-            };
-
-
-            HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
-            SSLContext context = null;
-            context = SSLContext.getInstance("TLS");
-
-            context.init(null, tmf.getTrustManagers(), null);
-            HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
-
-            SSLSocketFactory sf = context.getSocketFactory();
-
-
-            return sf;
-
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
-        }
-
-        return  null;
-    }
-
-
-    private void startMachineLearning() {
-        statusOutput.setText("Status: Offline");
-        KNNML ml = new KNNML(getApplicationContext(), googleMap, listOfResponses, gMap);
-        ml.execute();
-    }
-
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        double longtitude = marker.getPosition().longitude;
-        double latitude = marker.getPosition().latitude;
-
-
-        ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-        boolean gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        //Check if connection is active and check is gps is enabled
-        if (null != activeNetwork && true == gpsEnabled) {
-            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-            try {
-                Task location = fusedLocationProviderClient.getLastLocation();
-
-                location.addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Location location1 = (Location) task.getResult();
-                        gMap.drawRoute(longtitude, latitude, location1.getLatitude(), location1.getLongitude());
-                    } else {
-                        Log.d("Distance", "in else block");
-                    }
-                });
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            }
-        } else if (!gpsEnabled) {
-            printToast(getApplicationContext(), "Turn on GPS to use this feature", Toast.LENGTH_SHORT);
-        } else {
-            printToast(getApplicationContext(), "Turn on internet and gps to use routing feature", Toast.LENGTH_LONG);
-        }
-        return false;
-    }
-
->>>>>>> 53f9095e9641de0e9bec677bfb91583b0b241cca
 
 }
