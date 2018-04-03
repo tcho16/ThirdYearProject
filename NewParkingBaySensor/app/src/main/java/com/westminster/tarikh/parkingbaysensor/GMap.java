@@ -101,9 +101,9 @@ public class GMap {
 
     }
 
-    public void updateMapKNN(ArrayList<MarkerOptions> markers) {
+    public void updateMapKNN() {
         gmap.clear();
-        for(MarkerOptions marker : markers){
+        for(MarkerOptions marker : GMap.markers){
             gmap.addMarker(marker);
         }
     }

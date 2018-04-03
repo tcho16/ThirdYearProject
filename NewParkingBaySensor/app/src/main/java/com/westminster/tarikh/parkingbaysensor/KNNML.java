@@ -90,6 +90,6 @@ public class KNNML extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         Log.d("MLL", "EXECUTED MACHINE LEARNING");
-        gmap.updateMapKNN(markers);
+        gmap.updateMapKNN();
     }
 }
