@@ -81,6 +81,7 @@ public class KNNML extends AsyncTask<Void, Void, Void> {
                     }
                 }
                 markers.add(marker);
+                GMap.markers = markers;
             }
         }
         return null;

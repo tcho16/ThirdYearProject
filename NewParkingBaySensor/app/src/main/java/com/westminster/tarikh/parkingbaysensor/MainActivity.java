@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -27,13 +28,16 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +50,7 @@ import static HelperFunctions.HelperFunction.populateLists;
 import static HelperFunctions.HelperFunction.printToast;
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
 
 
     static final double LondonLat = 51.514471;
@@ -68,12 +72,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         requestQueue = Volley.newRequestQueue(this);
         setContentView(R.layout.activity_main);
-        gMap = new GMap(googleMap, getMarkers(), getApplicationContext());
+
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapFrag);
         mapFragment.getMapAsync(this);
         markers = new ArrayList<>();
         location = findViewById(R.id.addressLookUp);
         statusOutput = findViewById(R.id.textViewServiceOutput);
+        lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
 
         checkConnectionToServer();
@@ -84,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             listOfResponses = SaveRetrieveData.loadData(this);
 
         }
+        gMap = new GMap(googleMap, getMarkers(), getApplicationContext());
     }
 
 
@@ -152,8 +158,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
 
-        //TODO: UNCOMMENT THIS OUT
-        //googleMap.setOnMarkerClickListener(this);
+        googleMap.setOnMarkerClickListener(this);
         googleMap.setMyLocationEnabled(true);
     }
 
@@ -253,4 +258,43 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        double longtitude = marker.getPosition().longitude;
+        double latitude = marker.getPosition().latitude;
+        Log.d("Distance", "clicked on marker");
+
+
+        ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        boolean gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        //Check if connection is active and check is gps is enabled
+        if (null != activeNetwork && true == gpsEnabled) {
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+            Log.d("Distance", "after location");
+            try {
+                Task location = fusedLocationProviderClient.getLastLocation();
+
+                location.addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("Distance", "successful location");
+                        Location location1 = (Location) task.getResult();
+                        gMap.drawRoute(longtitude, latitude, location1.getLatitude(), location1.getLongitude());
+                    } else {
+                        Log.d("Distance", "in else block");
+                    }
+                });
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            }
+        } else if (!gpsEnabled) {
+            printToast(getApplicationContext(), "Turn on GPS to use this feature", Toast.LENGTH_SHORT);
+        } else {
+            printToast(getApplicationContext(), "Turn on internet and gps to use routing feature", Toast.LENGTH_LONG);
+        }
+        return false;
+    }
 }
