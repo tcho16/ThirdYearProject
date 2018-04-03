@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.westminster.tarikh.parkingbaysensor.AboutApp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/my_toolbarSecond"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/holo_blue_dark"
+            android:elevation="4dp"
+            app:titleTextColor="@android:color/black"
+            />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="This is a manual on how to use this app. This app is intended on searching for the parking bays that are in close proximity to you. The app will communicate with the server which will fetch the latest results from the sensor. If for some reason the app cannot communicate with the server, the app will initiate machine learning on the data it has been storing and based on an algorithm, it will predict what parking bays are available in the current time.\n"
+                    android:textSize="24sp" />
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="645dp"
+                    app:srcCompat="@drawable/screenshot" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="1. If GPS is enabled, it will show your current position on the map indicated by a blue dot.\n\n2. Yellow markers represent vacant whilst red markers represents occupied. Clicking on them will display more information.\n\n3. Press the GPS button to make the camera pan onto your location. Effective when you want to see parking bays near you.\n\n4. Enter a post code, street name or address into this bar and press the search button to see any parking bays in that location.\n\n5. Press this button to get real time information about the parking bays. If there is an error, it'll use machien learning.\n\n6. Press this to go to the guide of this app."
+                    android:textSize="24sp" />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
