@@ -61,6 +61,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -244,7 +245,17 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void sendRequestToServer() {
-        // http://10.100.150.208:8080/alljsonresult <-- uni IPv4
+//        RequestBays requestBays = new RequestBays(this);
+//        try {
+//            String result = requestBays.execute("https://192.168.43.49:8440/alljsonresult").get();
+//            Log.d("ssl",result);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        }
+
+        //http://10.100.150.208:8080/alljsonresult <-- uni IPv4
         StringRequest stringRequest = new StringRequest(Request.Method.GET, "http://192.168.43.49:8080/alljsonresult",
                 //Log.d("HTTPS","ABOUT TO REQUEST HTTPS");
                 //StringRequest stringRequest = new StringRequest(Request.Method.GET, "https://192.168.43.49:8440/alljsonresult",
@@ -287,7 +298,7 @@ public class ParkingBayMain extends AppCompatActivity implements OnMapReadyCallb
         requestQueue.add(stringRequest);
     }
 
-    private SSLSocketFactory getSocketFactory() {
+    public SSLSocketFactory getSocketFactory() {
 
         CertificateFactory cf = null;
         try {
