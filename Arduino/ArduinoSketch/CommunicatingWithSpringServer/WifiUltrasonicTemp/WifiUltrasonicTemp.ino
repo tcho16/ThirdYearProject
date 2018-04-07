@@ -22,6 +22,10 @@ const char* host = "192.168.43.49";
 #define BCOEFFICIENT 3950
 // the value of the 'other' resistor
 #define SERIESRESISTOR 10000
+//Threshold of temperature
+#define TEMPTHRESH 22
+// Threshold of distance
+#define DISTANCETHRESH 5
 
 
 // defines pins numbers for ultrasonic
@@ -31,7 +35,7 @@ const int echoPin = 0;  //D3
 long duration;
 int distance;
 
-uint16_t samples[NUMSAMPLES];
+int samples[NUMSAMPLES];
 
 void setUpUltrasonicPins() {
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output for ultrasonic
@@ -70,7 +74,7 @@ void setup(void) {
 }
 
 float averageOfThermistorReadings() {
-  uint8_t i;
+  int i;
   float average;
 
   // take N samples in a row, with a slight delay for an accurate thermistor reading
@@ -87,14 +91,15 @@ float averageOfThermistorReadings() {
 }
 
 float steinhartConversion(float average) {
-  float steinhart;
-  steinhart = average / THERMISTORNOMINAL;     // (R/Ro)
-  steinhart = log(steinhart);                  // ln(R/Ro)
-  steinhart /= BCOEFFICIENT;                   // 1/B * ln(R/Ro)
-  steinhart += 1.0 / (TEMPERATURENOMINAL + 273.15); // + (1/To)
-  steinhart = 1.0 / steinhart;                 // Invert
-  steinhart -= 273.15;                         // convert to C
-  return steinhart;
+  //using B equation
+  float temp;
+  temp = average / THERMISTORNOMINAL;     // diving average by the nominal (resistance at room temp)
+  temp = log(temp);                  // ln(average)
+  temp = temp / BCOEFFICIENT;        // currentValue of steinhart / B
+  temp = temp + 1.0 / (TEMPERATURENOMINAL + 273.15); // currentValue of steinhart + (1/To)
+  temp = 1.0 / temp;                  // Invert
+  temp = temp - 273.15;               // convert to C from kelvins
+  return temp;
 }
 
 float ultrasonicCalculation() {
@@ -129,7 +134,7 @@ void loop(void) {
   Serial.print(steinhart);
   Serial.println(" *C");
 
-  // Calculating the distance
+  // Calculating the distance. Converting sound to cm per microseconds
   distance = ultrasonicCalculation() * 0.034 / 2;
 
   // Prints the distance on the Serial Monitor
@@ -151,7 +156,7 @@ void loop(void) {
   WiFiClient client;
   const int httpPort = 8080;
 
-  if (steinhart > 22 && distance < 10) {
+  if (steinhart > TEMPTHRESH && distance < DISTANCETHRESH) {
     //SEND A REQUEST INDICATING CAR SPOT IS OCCUPIED
     if (!client.connect(host, httpPort)) {
       Serial.println("connection failed");
