@@ -93,7 +93,7 @@ float averageOfThermistorReadings() {
 float steinhartConversion(float average) {
   //using B equation
   float temp;
-  temp = average / THERMISTORNOMINAL;     // diving average by the nominal (resistance at room temp)
+  temp = average / THERMISTORNOMINAL;     // dividing average by the nominal (resistance at room temp)
   temp = log(temp);                  // ln(average)
   temp = temp / BCOEFFICIENT;        // currentValue of steinhart / B
   temp = temp + 1.0 / (TEMPERATURENOMINAL + 273.15); // currentValue of steinhart + (1/To)
@@ -195,7 +195,7 @@ void loop(void) {
 
 
 
-    // We now create a URI for the request 51.518220, -0.141136
+    // We now create a URI for the request 
     String url = "/posttodb?id=59&longitude=2.330469&latitude=46.446416&status=0";
     Serial.print("Requesting URL: ");
     Serial.println(url);
