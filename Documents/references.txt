@@ -1,0 +1,52 @@
+[2] Garret, O., 2017. 10 Million Self-Driving Cars Will Hit The Road By 2020 -- Here's How To Profit. Forbes. Available at: https://www.forbes.com/sites/oliviergarret/2017/03/03/10-million-self-driving-cars-will-hit-the-road-by-2020-heres-how-to-profit/#3c617ee37e50 [Accessed April 7, 2018].
+[3] 
+[4] Email
+[5] Hamada R.H.A, Patrick S, Justin D.D.D, Yap V.V. (2010). Vision-Based Automated Parking System. 10th International Conference on Information sciences, signal processoring and their applications. Malaysia. 10-13 May 2010. 757-760.
+[6] Petsch K, Dotzlaf P, Daubenspeck C, Duthie N and Dr. Mock A. (2012). Automated Parking Space Locator: RSM. ASEE North Central Section Conference. Ohio Northern University. 24 March 2012. 1-13
+[7] Rashid M. M, Musa A, Rahman A.M and Farahana N, Farhana A. (2012). Automatic Parking Management System and Parking Fee Collection Based on Number Plate Recognition. International Journal of Machine Learning and Computing. Vol. 2, No. 2. 93-98.
+[8] Moore, C. 2017. OnePlus OxygenOS built-in analytics. Chris's Security and Tech Blog. Available From https://www.chrisdcmoore.co.uk/post/oneplus-analytics/. [Accessed February 2018].
+[9] Morbin, T. (2017). Anti-virus collects data without user permissions & uses commercially. SC Magazine UK. Available From https://www.scmagazineuk.com/anti-virus-collects-data-without-user-permissions-uses-commercially/article/690001/ [Accessed February 2018].
+[10] Weiss B. (2018). Trump-linked firm Cambridge Analytica collected personal information from 50 million Facebook users without permission. 17 March 2018. Available From http://uk.businessinsider.com/cambridge-analytica-trump-firm-facebook-data-50-million-users-2018-3 [Accessd March 2018].
+[11] Prodromou A. (2017). TLS/SSL Explained: TLS/SSL Terminology and Basics. May 2017. Available From https://dzone.com/articles/tlsssl-terminology-and-basics [Accessed April 2018].
+[12] Granger P. (2017). Chrome 62 Means Time to Get Secure and Improve Your SEO and Trust. October 2017. Available From https://www.globalsign.com/en/blog/chrome-62-update/ [Accessed S
+[13] Cisco. (No Date). Introduction to Secure Sockets Layer. Available From http://euro.ecom.cmu.edu/resources/elibrary/epay/SSL.pdf [Accessed From April 2018]
+[14] eTutorials. (No Date). Asymmetric Encryption Explained. Available From http://etutorials.org/Programming/Programming+.net+security/Part+III+.NET+Cryptography/Chapter+15.+Asymmetric+Encryption/15.1+Asymmetric+Encryption+Explained/ [Accessed From March 2018]
+[15] Whalley A. (2016). SHA-1 Certificates in Chrome. Available From https://security.googleblog.com/2016/11/sha-1-certificates-in-chrome.html [Accessed April 2018]
+[16] Shatterd io
+[17] Newman L. (2017). A SUPER-COMMON CRYPTO TOOL TURNS OUT TO BE SUPER-INSECURE. Available From https://www.wired.com/2017/02/common-cryptographic-tool-turns-majorly-insecure/ [Accessed April 2018].
+[18] Kaliski. (No Date). The Mathematics of the RSA Public-Key Cryptosystem. Available From http://www.mathaware.org/mam/06/Kaliski.pdf [Accessed March 2018]
+[19] euturoials again
+[20] http://runeberg.org/matetids/1920b/0031.html - Queuing theory paper
+[21] Robert M, Promet R and Drago P. (2015). APPLICABILITY OF INFORMATION TECHNOLOGIES IN PARKING AREA CAPACITY OPTIMIZATION. Computational Logistics: 6th International Conference, ICCL 2015. Netherlands. 23-25 September 2015. 143-151.
+[22] Lee D. (2018). CES 2018: Byton unveils futuristic ‘truly smart’ car. Available From http://www.bbc.co.uk/news/technology-42599345 [Accessed From January 2018]
+[23] Human Interaction PDF
+[24] Kaluža B. (2016). Machine Learning in Java. Packt Publishing. Available From http://proquest.safaribooksonline.com.ezproxy.westminster.ac.uk/book/programming/machine-learning/9781784396589 [Accessed From December 2017]
+[25] Bates J and Leibling D. (2012). Spaced Out Perspectives on parking policy. RAC Foundation. Available From https://www.racfoundation.org/wp-content/uploads/2017/11/spaced_out-bates_leibling-jul12.pdf [Accessed December 2018]
+[26] Why is Nearest Neighbor a Lazy Algorithm? (No Date). Available From https://sebastianraschka.com/faq/docs/lazy-knn.html [Accessed February 2018]
+[27] Bronshtein A. (2017). A Quick Introduction to K-Nearest Neighbors Algorithm. Medium. Available From https://medium.com/@adi.bronshtein/a-quick-introduction-to-k-nearest-neighbors-algorithm-62214cea29c7 [Accessed February 2018]
+[28] Brownlee J (2016). Logistic Regression for Machine Learning. Machine Learning Mastery. Available From https://machinelearningmastery.com/logistic-regression-for-machine-learning/ [Accessed January 2018].
+[29] Brownlee J. (2016) Logistic Regression Tutorial for Machine Learning. Machine Learning Mastery. Available From https://machinelearningmastery.com/logistic-regression-tutorial-for-machine-learning/ [Accessed January 2018].
+[30] UFLDL Stanford. (No Date). Optimization: Stochastic Gradient Descent. Available From http://ufldl.stanford.edu/tutorial/supervised/OptimizationStochasticGradientDescent/ [Accessed On January 2018].
+[31] Zulkifli H. (No Date). Understanding Learning Rates and How It Improves Performance in Deep Learning. Towards Data Science. Available From https://towardsdatascience.com/understanding-learning-rates-and-how-it-improves-performance-in-deep-learning-d0d4059c1c10 [Accessed February 2018]
+[32] What is a breadboard? (No Date). Wiring. Available From http://wiring.org.co/learning/tutorials/breadboard/ [Accessed Sepetember 2017]
+[33] Wiring. (No Date). Breadboard Overview. [image] Available From http://wiring.org.co/learning/tutorials/breadboard/ [Accessed September 2017]
+[34] Arduino Documentation. (No Date). Analog Input. Available From https://www.arduino.cc/en/Tutorial/AnalogInput [Accessed September 2017]
+[35] Tarikh Chouhan PID
+[36] Albertson J. (2017). Put it in park with new features in Google Maps. Google. Available From https://www.blog.google/products/maps/put-it-park-new-features-google-maps/ [Accessed August 2017]
+[37] AppyParking. (No Date). AppyParking homepage. Available From http://www.appyparking.com/rta.html [Accessed August 2017].
+[38] Schulz J. (2017). Our Newest Innovation: Ultrasonic Sensor Parking Availability Technology. Inrix. Available From http://inrix.com/blog/2017/12/ultrasonic-sensor-parking-availability-technology/ [Accessed December 2017]
+[39] Popper B. (2017). Google announces over 2 billion monthly active devices on Android. The Verge. Available From https://www.theverge.com/2017/5/17/15654454/android-reaches-2-billion-monthly-active-users [Accessed December 2017]
+[40] WHAT IS AGILE? WHAT IS SCRUM? (No Date). CPrime. Available From https://www.cprime.com/resources/what-is-agile-what-is-scrum/ [Accessed September 2017]
+[41] Understanding POJOs. (No Date). Spring. Available From https://spring.io/understanding/POJO. [Accessed September 2017]
+[42] Mathew G. (2013). Drawing driving route directions between two locations using Google Directions in Google Map Android API V2. Knowledge by Experience. Available From http://wptrafficanalyzer.in/blog/drawing-driving-route-directions-between-two-locations-using-google-directions-in-google-map-android-api-v2/ [Accessed January 2018]
+[43] Security with HTTPS and SSL. (No Date). Android Development Guide. Avaialble From https://developer.android.com/training/articles/security-ssl.html [Accessed March 2018]
+[44] Understanding Tomcat Connectors. (No Date). MuleSoft. Available From https://www.mulesoft.com/tcat/tomcat-connectors. [Accessed March 2017]
+[45] Sohail F. (2014). Understanding the Tomcat NIO Connector and How to Configure It. DZone. Available From https://dzone.com/articles/understanding-tomcat-nio [Accessed March 2018]
+[46] Using a Thermistor. (No Date). Adafruit. Available From https://learn.adafruit.com/thermistor/using-a-thermistor [Accessed August 2017]
+[47] Lavenuta G (No Date). AN EXPLANATION OF THE BETA AND STEINHART-HART EQUATIONS FOR REPRESENTING THE RESISTANCE VS. TEMPERATURE RELATIONSHIP IN NTC THERMISTOR MATERIALS. QTI Sensing Solutions. Available From https://www.thermistor.com/sites/default/files/specsheets/Beta-vs-Steinhart-Hart-Equations.pdf [Accessed September 2017]
+[48] M2M Book
+[49] Black Box Testing. (No Date). Software Testing Fundamentals. Available From http://softwaretestingfundamentals.com/black-box-testing/ [Accessed January 2018]
+[50] What is Decision table in software testing? (No Date). ISTQB Exam Certification. Available From http://istqbexamcertification.com/what-is-decision-table-in-software-testing/ [Accessed March 2018]
+[51] Android: Import SSL certificate and use it to SSL connection (2011). Step by Step. Available From http://transoceanic.blogspot.co.uk/2011/11/android-import-ssl-certificate-and-use.html [Accessed March 2018]
+[52] Sánchez F. (2013). Self-signed SSL acceptance on Android [Forum Post]. StackOverflow. Available From https://stackoverflow.com/questions/1217141/self-signed-ssl-acceptance-on-android [Accessed March 2018]
+[53] Harrison C. (2007). Harvard University Program on Survey Research. Available From https://psr.iq.harvard.edu/files/psr/files/PSRQuestionnaireTipSheet_0.pdf [Accessed March 2018]
