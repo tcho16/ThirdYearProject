@@ -16,10 +16,10 @@
 [17] Newman L. (2017). A SUPER-COMMON CRYPTO TOOL TURNS OUT TO BE SUPER-INSECURE. Available From https://www.wired.com/2017/02/common-cryptographic-tool-turns-majorly-insecure/ [Accessed April 2018].
 [18] Kaliski. (No Date). The Mathematics of the RSA Public-Key Cryptosystem. Available From http://www.mathaware.org/mam/06/Kaliski.pdf [Accessed March 2018]
 [19] euturoials again
-[20] http://runeberg.org/matetids/1920b/0031.html - Queuing theory paper
+[20] http://runeberg.org/matetids/1920b/0031.html - Queuing theory paper --- [21?] http://www.gofcr.com/understanding-erlang-and-queuing-theory/ ---https://plus.maths.org/content/agner-krarup-erlang-1878-1929#allref
 [21] Robert M, Promet R and Drago P. (2015). APPLICABILITY OF INFORMATION TECHNOLOGIES IN PARKING AREA CAPACITY OPTIMIZATION. Computational Logistics: 6th International Conference, ICCL 2015. Netherlands. 23-25 September 2015. 143-151.
 [22] Lee D. (2018). CES 2018: Byton unveils futuristic ‘truly smart’ car. Available From http://www.bbc.co.uk/news/technology-42599345 [Accessed From January 2018]
-[23] Human Interaction PDF
+[23] Konig M, Neumayr L. (2016). Users’ resistance towards radical innovations: The case of the self-driving car. Elsevier. Available From https://www.journals.elsevier.com/transportation-research-part-f-traffic-psychology-and-behaviour [Accessed Jan 2018]  Human Interaction PDF
 [24] Kaluža B. (2016). Machine Learning in Java. Packt Publishing. Available From http://proquest.safaribooksonline.com.ezproxy.westminster.ac.uk/book/programming/machine-learning/9781784396589 [Accessed From December 2017]
 [25] Bates J and Leibling D. (2012). Spaced Out Perspectives on parking policy. RAC Foundation. Available From https://www.racfoundation.org/wp-content/uploads/2017/11/spaced_out-bates_leibling-jul12.pdf [Accessed December 2018]
 [26] Why is Nearest Neighbor a Lazy Algorithm? (No Date). Available From https://sebastianraschka.com/faq/docs/lazy-knn.html [Accessed February 2018]
